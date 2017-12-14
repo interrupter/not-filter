@@ -1,62 +1,37 @@
 const expect = require("chai").expect,
-	filter = require('../index.js').filter;
-let	schema = {
-	name:{
-		type: String,
-		searchable: true
-	},
-	active:{
-		type: Boolean,
-		searchable: true
-	},
-	age:{
-		type: Number,
-		searchable: true
-	},
-	shadow:{
-		type: String,
-		searchable: false
-	},
-	password:{
-		type: String,
-		searchable: false
-	},
-	roles:{
-		type: Set,
-		searchable: true
-	}
-};
+	filter = require('../index.js').filter,
+	schema = require('./schema.js');
 
 describe("filter", function() {
 	describe("init", function() {
 		it("no options is passed", function() {
 			filter.init();
-			expect(filter.pathToFilterInput).to.be.equal(':query.filter');
-			expect(filter.pathToFilter).to.be.equal(':filter');
-			expect(filter.getterOfFilterInput).to.be.null;
-			expect(filter.setterOfFilter).to.be.null;
+			expect(filter.options.input).to.be.equal(':query.filter');
+			expect(filter.options.output).to.be.equal(':filter');
+			expect(filter.options.getter).to.be.null;
+			expect(filter.options.setter).to.be.null;
 		});
 
 		it("empty options is passed", function() {
 			filter.init({});
-			expect(filter.pathToFilterInput).to.be.equal(':query.filter');
-			expect(filter.pathToFilter).to.be.equal(':filter');
-			expect(filter.getterOfFilterInput).to.be.null;
-			expect(filter.setterOfFilter).to.be.null;
+			expect(filter.options.input).to.be.equal(':query.filter');
+			expect(filter.options.output).to.be.equal(':filter');
+			expect(filter.options.getter).to.be.null;
+			expect(filter.options.setter).to.be.null;
 		});
 
 		it("all options passed", function() {
 			let opts = {
-				inputPath: ':input',
-				outputPath: ':output',
+				input: ':input',
+				output: ':output',
 				getter: ()=>{ return 'getter';},
 				setter: ()=>{ return 'setter';}
 			};
 			filter.init(opts);
-			expect(filter.pathToFilterInput).to.be.equal(opts.inputPath);
-			expect(filter.pathToFilter).to.be.equal(opts.outputPath);
-			expect(filter.getterOfFilterInput).to.be.equal(opts.getter);
-			expect(filter.setterOfFilter).to.be.equal(opts.setter);
+			expect(filter.options.input).to.be.equal(opts.input);
+			expect(filter.options.output).to.be.equal(opts.output);
+			expect(filter.options.getter).to.be.equal(opts.getter);
+			expect(filter.options.setter).to.be.equal(opts.setter);
 		});
 
 
@@ -114,54 +89,64 @@ describe("filter", function() {
 		});
 	});
 
-	describe("processFilter", function() {
+	describe("process", function() {
 		it("passed in `OR` filter and object", function() {
 			filter.reset();
 			filter.init({
-				inputPath: ':input',
-				outputPath: ':output',
-				getter: null,
-				setter: null
+				'input': ':input',
+				'output': ':output',
+				'getter': null,
+				'setter': null
 			});
 
 			let f = [],
 				input = {
-					'input':[{name: 'my'}]
+					input: [{name: 'my'}]
 				},
 				output = {
-					'input':[{name: 'my'}],
+					input:[{name: 'my'}],
 					output: [{name: 'my'}]
 				};
-			filter.processFilter(input, {}, schema);
+			filter.process(input, schema);
 			expect(input).to.be.deep.equal(output);
 		});
 
 		it("passed in `AND` filter and object", function() {
 			filter.reset();
 			filter.init({
+				input: ':input',
+				output: ':output',
 				getter: (req)=>{
 					return req.input;
 				},
 				setter: (req, filterOutput, schema)=>{
-					req.output=filterOutput;
+					req.output = filterOutput;
 				}
 			});
 
 			let f = [],
-				input = {
-					'input':{name: 'my'}
+				inputData = {
+					input:{
+						name: 'my'
+					}
 				},
-				output = {
-					'input':{name: 'my'},
-					'output':{name: 'my'}
+				outputData = {
+					input:{
+						name: 'my'
+					},
+					output:{
+						name: 'my'
+					}
 				};
-			filter.processFilter(input, {}, schema);
-			expect(input).to.be.deep.equal(output);
+			filter.process(inputData, schema);
+			expect(inputData).to.be.deep.equal(outputData);
 		});
 
 		it("passed in `AND` filter and null", function() {
 			filter.reset();
 			filter.init({
+				'input': ':input',
+				'output': ':output',
 				getter: (req)=>{
 					return req.input;
 				},
@@ -172,29 +157,31 @@ describe("filter", function() {
 			let f = [],
 				input = {},
 				output = {};
-			filter.processFilter(input, {}, schema);
+			filter.process(input, schema);
 			expect(input).to.be.deep.equal(output);
 		});
 
 		it("passed in `AND` filter and null", function() {
 			filter.reset();
 			filter.init({
+				'input': ':input',
+				'output': ':output',
 				inputPath: null,
 				outputPath: null,
 			});
 			let f = [],
 				input = {},
 				output = {};
-			filter.processFilter(input, {}, schema);
+			filter.process(input, schema);
 			expect(input).to.be.deep.equal(output);
 		});
 	});
 
-	describe("parseFilter", function() {
+	describe("parse", function() {
 		before(()=>{
 			filter.init({
-				inputPath: ':input',
-				outputPath: ':output',
+				input: ':input',
+				output: ':output',
 				getter: null,
 				setter: null
 			});
@@ -205,7 +192,7 @@ describe("filter", function() {
 				active: 'true',
 				age: '15',
 			};
-			expect(filter.parseFilter(f, schema)).to.be.deep.equal({
+			expect(filter.parse(f, schema)).to.be.deep.equal({
 				name: 'my',
 				active: true,
 				age: 15
@@ -218,7 +205,7 @@ describe("filter", function() {
 				active: 'true',
 				age: '15',
 			}];
-			expect(filter.parseFilter(f, schema)).to.be.deep.equal([{
+			expect(filter.parse(f, schema)).to.be.deep.equal([{
 				name: 'my',
 				active: true,
 				age: 15
@@ -229,8 +216,8 @@ describe("filter", function() {
 	describe("parseAsOr", function() {
 		before(()=>{
 			filter.init({
-				inputPath: ':input',
-				outputPath: ':output',
+				input: ':input',
+				output: ':output',
 				getter: null,
 				setter: null
 			});
@@ -241,7 +228,7 @@ describe("filter", function() {
 				active: 'true',
 				age: '15',
 			}];
-			expect(filter.parseFilter(f, schema)).to.be.deep.equal([{
+			expect(filter.parse(f, schema)).to.be.deep.equal([{
 				name: 'my',
 				active: true,
 				age: 15
@@ -252,8 +239,8 @@ describe("filter", function() {
 	describe("parseAsAnd", function() {
 		before(()=>{
 			filter.init({
-				inputPath: ':input',
-				outputPath: ':output',
+				input: ':input',
+				output: ':output',
 				getter: null,
 				setter: null
 			});
