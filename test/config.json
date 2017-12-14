@@ -1,0 +1,7 @@
+{
+	"modules" :{
+		"filter":{
+			"path": "logs/log"
+		}
+	}
+}

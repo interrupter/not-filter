@@ -1,0 +1,333 @@
+const expect = require("chai").expect,
+	filter = require('../index.js').filter;
+let	schema = {
+	name:{
+		type: String,
+		searchable: true
+	},
+	active:{
+		type: Boolean,
+		searchable: true
+	},
+	age:{
+		type: Number,
+		searchable: true
+	},
+	shadow:{
+		type: String,
+		searchable: false
+	},
+	password:{
+		type: String,
+		searchable: false
+	},
+	roles:{
+		type: Set,
+		searchable: true
+	}
+};
+
+describe("filter", function() {
+	describe("init", function() {
+		it("no options is passed", function() {
+			filter.init();
+			expect(filter.pathToFilterInput).to.be.equal(':query.filter');
+			expect(filter.pathToFilter).to.be.equal(':filter');
+			expect(filter.getterOfFilterInput).to.be.null;
+			expect(filter.setterOfFilter).to.be.null;
+		});
+
+		it("empty options is passed", function() {
+			filter.init({});
+			expect(filter.pathToFilterInput).to.be.equal(':query.filter');
+			expect(filter.pathToFilter).to.be.equal(':filter');
+			expect(filter.getterOfFilterInput).to.be.null;
+			expect(filter.setterOfFilter).to.be.null;
+		});
+
+		it("all options passed", function() {
+			let opts = {
+				inputPath: ':input',
+				outputPath: ':output',
+				getter: ()=>{ return 'getter';},
+				setter: ()=>{ return 'setter';}
+			};
+			filter.init(opts);
+			expect(filter.pathToFilterInput).to.be.equal(opts.inputPath);
+			expect(filter.pathToFilter).to.be.equal(opts.outputPath);
+			expect(filter.getterOfFilterInput).to.be.equal(opts.getter);
+			expect(filter.setterOfFilter).to.be.equal(opts.setter);
+		});
+
+
+	});
+
+	describe("getFilterType", function() {
+		it("passed in array", function() {
+			expect(filter.getFilterType([])).to.be.equal(filter.OPT_OR);
+		});
+
+		it("passed in object", function() {
+			expect(filter.getFilterType({})).to.be.equal(filter.OPT_AND);
+		});
+
+		it("passed in undefined", function() {
+			expect(filter.getFilterType(undefined)).to.be.false;
+		});
+
+		it("passed in null", function() {
+			expect(filter.getFilterType(null)).to.be.false;
+		});
+
+		it("passed in Date", function() {
+			expect(filter.getFilterType(new Date())).to.be.false;
+		});
+	});
+
+	describe("createFilter", function() {
+		it("passed in none", function() {
+			expect(filter.createFilter()).to.be.an('array');
+		});
+
+		it("passed in OPT_AND", function() {
+			expect(filter.createFilter(filter.OPT_AND)).to.be.an('object');
+		});
+
+		it("passed in OPT_OR", function() {
+			expect(filter.createFilter(filter.OPT_OR)).to.be.an('array');
+		});
+	});
+
+	describe("addRule", function() {
+		it("passed in `AND` filter and object", function() {
+			let f = {};
+			expect(filter.addRule(f, {field: 'rule'})).to.be.deep.equal({
+				field: 'rule'
+			});
+		});
+
+		it("passed in `OR` filter and object", function() {
+			let f = [];
+			expect(filter.addRule(f, {field: 'rule'})).to.be.deep.equal([{
+				field: 'rule'
+			}]);
+		});
+	});
+
+	describe("processFilter", function() {
+		it("passed in `OR` filter and object", function() {
+			filter.reset();
+			filter.init({
+				inputPath: ':input',
+				outputPath: ':output',
+				getter: null,
+				setter: null
+			});
+
+			let f = [],
+				input = {
+					'input':[{name: 'my'}]
+				},
+				output = {
+					'input':[{name: 'my'}],
+					output: [{name: 'my'}]
+				};
+			filter.processFilter(input, {}, schema);
+			expect(input).to.be.deep.equal(output);
+		});
+
+		it("passed in `AND` filter and object", function() {
+			filter.reset();
+			filter.init({
+				getter: (req)=>{
+					return req.input;
+				},
+				setter: (req, filterOutput, schema)=>{
+					req.output=filterOutput;
+				}
+			});
+
+			let f = [],
+				input = {
+					'input':{name: 'my'}
+				},
+				output = {
+					'input':{name: 'my'},
+					'output':{name: 'my'}
+				};
+			filter.processFilter(input, {}, schema);
+			expect(input).to.be.deep.equal(output);
+		});
+
+		it("passed in `AND` filter and null", function() {
+			filter.reset();
+			filter.init({
+				getter: (req)=>{
+					return req.input;
+				},
+				setter: (req, filterOutput, schema)=>{
+					req.output = filterOutput;
+				}
+			});
+			let f = [],
+				input = {},
+				output = {};
+			filter.processFilter(input, {}, schema);
+			expect(input).to.be.deep.equal(output);
+		});
+
+		it("passed in `AND` filter and null", function() {
+			filter.reset();
+			filter.init({
+				inputPath: null,
+				outputPath: null,
+			});
+			let f = [],
+				input = {},
+				output = {};
+			filter.processFilter(input, {}, schema);
+			expect(input).to.be.deep.equal(output);
+		});
+	});
+
+	describe("parseFilter", function() {
+		before(()=>{
+			filter.init({
+				inputPath: ':input',
+				outputPath: ':output',
+				getter: null,
+				setter: null
+			});
+		});
+		it("filter AND", function() {
+			let f = {
+				name: 'my',
+				active: 'true',
+				age: '15',
+			};
+			expect(filter.parseFilter(f, schema)).to.be.deep.equal({
+				name: 'my',
+				active: true,
+				age: 15
+			});
+		});
+
+		it("filter OR", function() {
+			let f = [{
+				name: 'my',
+				active: 'true',
+				age: '15',
+			}];
+			expect(filter.parseFilter(f, schema)).to.be.deep.equal([{
+				name: 'my',
+				active: true,
+				age: 15
+			}]);
+		});
+	});
+
+	describe("parseAsOr", function() {
+		before(()=>{
+			filter.init({
+				inputPath: ':input',
+				outputPath: ':output',
+				getter: null,
+				setter: null
+			});
+		});
+		it("filter OR", function() {
+			let f = [{
+				name: 'my',
+				active: 'true',
+				age: '15',
+			}];
+			expect(filter.parseFilter(f, schema)).to.be.deep.equal([{
+				name: 'my',
+				active: true,
+				age: 15
+			}]);
+		});
+	});
+
+	describe("parseAsAnd", function() {
+		before(()=>{
+			filter.init({
+				inputPath: ':input',
+				outputPath: ':output',
+				getter: null,
+				setter: null
+			});
+		});
+		it("filter AND", function() {
+			let f = {
+				name: 'my',
+				active: 'true',
+				age: '15',
+			};
+			expect(filter.parseAsAnd(f, schema)).to.be.deep.equal({
+				name: 'my',
+				active: true,
+				age: 15
+			});
+		});
+	});
+
+	describe("parseBlock", function() {
+
+		it("block 1", function() {
+			let f = {
+				name: 'my',
+				active: 'true',
+				age: '15',
+			};
+			expect(filter.parseBlock(f, schema)).to.be.deep.equal({
+				name: 'my',
+				active: true,
+				age: 15
+			});
+		});
+
+		it("block 2", function() {
+			let f = {
+				name: 2,
+				active: 0,
+				age: 'abracadabra',
+			};
+			expect(filter.parseBlock(f, schema)).to.be.deep.equal({
+				name: '2',
+				active: false
+			});
+		});
+
+		it("block 3", function() {
+			let f = {
+				name: null,
+				active: 1,
+				age: null,
+			};
+			expect(filter.parseBlock(f, schema)).to.be.deep.equal({
+				active: true
+			});
+		});
+
+		it("block 4", function() {
+			let f = {
+				shadow: 'tactics',
+				active: 'jingle-bells',
+				age: null,
+				roles: ['user']
+			};
+			expect(filter.parseBlock(f, schema)).to.be.deep.equal({});
+		});
+
+		it("block 5", function() {
+			let f = {
+				shadow: 'tactics',
+				active: 'false',
+				age: null,
+				roles: ['user']
+			};
+			expect(filter.parseBlock(f, schema)).to.be.deep.equal({active: false});
+		});
+	});
+});
