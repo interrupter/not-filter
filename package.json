@@ -28,7 +28,8 @@
     "dependencies": {
         "escape-string-regexp": "^1.0.5",
         "lower-case": "^1.1.4",
-        "not-path": "*"
+        "not-path": "*",
+        "not-config": "0.0.3"
     },
     "devDependencies": {
         "chai": "*",
@@ -37,7 +38,6 @@
         "ink-docstrap": "^1.3.2",
         "istanbul": "*",
         "jsdoc": "^3.5.5",
-        "mocha": "*",
-        "not-config": "*"
+        "mocha": "*"
     }
 }

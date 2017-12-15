@@ -1,7 +1,8 @@
 {
 	"modules" :{
 		"filter":{
-			"path": "logs/log"
+			"path": "logs/log",
+			"size": 15
 		}
 	}
 }

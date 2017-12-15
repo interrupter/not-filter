@@ -1,3 +1,7 @@
+/**
+* @module not-filter/sort
+*/
+
 const CommonQueryProcessor = require('./common.js');
 
 const OPT_SORTER = {
