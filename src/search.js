@@ -3,7 +3,8 @@
 */
 
 const CommonQueryProcessor = require('./common.js'),
-	escapeStringRegexp = require('escape-string-regexp');
+	escapeStringRegexp = require('escape-string-regexp'),
+	config = require('not-config').readerForModule('filter');
 
 /**
  * @const {string} OPT_INPUT_PATH
@@ -49,7 +50,7 @@ class Search extends CommonQueryProcessor{
 				searchRule = new RegExp('.*' + escapeStringRegexp(filterSearch) + '.*', 'i');
 			for (let k in modelSchema) {
 				if (modelSchema[k].searchable) {
-					let emptyRule = {};
+					let emptyRule = {}, t;
 					switch (modelSchema[k].type) {
 					case Number:
 						if (isNaN(filterSearchNumber)) {
@@ -59,7 +60,7 @@ class Search extends CommonQueryProcessor{
 						}
 						break;
 					case Boolean:
-						let t = this.getBoolean(filterSearch);
+						t = this.getBoolean(filterSearch);
 						if (typeof t !== 'undefined') {
 							emptyRule[k] = t;
 						}
@@ -77,6 +78,14 @@ class Search extends CommonQueryProcessor{
 			}
 		}
 		return result;
+	}
+
+	/**
+	* Returns default value
+	* @return {object|array}
+	*/
+	getDefault(){
+		return config.get('default.search');
 	}
 
 }

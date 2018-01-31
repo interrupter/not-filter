@@ -2,7 +2,8 @@
 * @module not-filter/sort
 */
 
-const CommonQueryProcessor = require('./common.js');
+const CommonQueryProcessor = require('./common.js'),
+	config = require('not-config').readerForModule('filter');
 
 const OPT_SORTER = {
 	'_id': 1
@@ -90,6 +91,14 @@ class Sorter extends CommonQueryProcessor{
 			}
 		}
 		return result;
+	}
+
+	/**
+	* Returns default value
+	* @return {object|array}
+	*/
+	getDefault(){
+		return config.get('default.sort');
 	}
 }
 

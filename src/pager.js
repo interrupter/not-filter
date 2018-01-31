@@ -48,6 +48,14 @@ class Pager extends CommonQueryProcessor{
 			skip
 		};
 	}
+
+	/**
+	* Returns default value
+	* @return {object|array}
+	*/
+	getDefault(){
+		return config.get('default.pager');
+	}
 }
 
 module.exports = new Pager();

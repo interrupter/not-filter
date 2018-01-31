@@ -2,7 +2,8 @@
 * @module not-filter/return
 */
 
-const CommonQueryProcessor = require('./common.js');
+const CommonQueryProcessor = require('./common.js'),
+	config = require('not-config').readerForModule('filter');
 
 /**
  * @const {string} OPT_INPUT_PATH
@@ -33,17 +34,15 @@ class Return extends CommonQueryProcessor{
 	}
 
 	/**
- 	* Parse item, delete fields that not in input map
- 	* @param {object} input return fields map
- 	* @param {object} modelSchema not model schema
- 	* @param {object} item one row
- 	*/
+	 * Parse item, delete fields that not in input map
+	 * @param {object} input return fields map
+	 * @param {object} modelSchema not model schema
+	 * @param {object} item one row
+	 */
 	parseItem(input, modelSchema, item){
 		if (typeof item === 'object' ){
 			for(let t in item){
-				if (input.hasOwnProperty(t)){
-
-				}else{
+				if (!input.hasOwnProperty(t)){
 					delete item[t];
 				}
 			}
@@ -54,6 +53,7 @@ class Return extends CommonQueryProcessor{
 	* Parses
 	* @param {object|array} input filter fields of output record
 	* @param {object} modelSchema not model schema
+	* @param {object} data data to be filtered
 	* @return {object|array} parsed filter
 	*/
 	parse(input, modelSchema, data){
@@ -66,6 +66,14 @@ class Return extends CommonQueryProcessor{
 			}
 		}
 		return result;
+	}
+
+	/**
+	* Returns default value
+	* @return {object|array}
+	*/
+	getDefault(){
+		return config.get('default.sort');
 	}
 }
 

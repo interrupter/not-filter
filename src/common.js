@@ -109,9 +109,11 @@ class CommonQueryProcessor {
 				input = notPath.get(this.options.input, req, {});
 			}
 		}
-		if (input){
+		if (input && input!== 'undefined'){
 			let additional = arguments.length>2?Array.prototype.slice.call(arguments, 2):[];
 			output = this.parse(input, modelSchema, ...additional);
+		}else{
+			output = this.getDefault();
 		}
 		if (output){
 			if (typeof this.options.setter == 'function'){

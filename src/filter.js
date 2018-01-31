@@ -2,7 +2,8 @@
 * @module not-filter/filter
 */
 
-const CommonQueryProcessor = require('./common.js');
+const CommonQueryProcessor = require('./common.js'),
+	config = require('not-config').readerForModule('filter');
 
 /**
  * @const {string} OPT_INPUT_PATH
@@ -117,6 +118,13 @@ class Filter extends CommonQueryProcessor{
 		return result;
 	}
 
+	/**
+	* Returns default value
+	* @return {object|array}
+	*/
+	getDefault(){
+		return config.get('default.filter');
+	}
 }
 
 module.exports = new Filter();
