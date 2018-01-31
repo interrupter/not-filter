@@ -85,7 +85,7 @@ class Search extends CommonQueryProcessor{
 	* @return {object|array}
 	*/
 	getDefault(){
-		return config.get('default.search');
+		return config.get('default:search');
 	}
 
 }

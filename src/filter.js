@@ -123,7 +123,7 @@ class Filter extends CommonQueryProcessor{
 	* @return {object|array}
 	*/
 	getDefault(){
-		return config.get('default.filter');
+		return config.get('default:filter');
 	}
 }
 

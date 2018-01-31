@@ -73,7 +73,7 @@ class Return extends CommonQueryProcessor{
 	* @return {object|array}
 	*/
 	getDefault(){
-		return config.get('default.sort');
+		return config.get('default:return');
 	}
 }
 

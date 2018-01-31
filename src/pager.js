@@ -54,7 +54,7 @@ class Pager extends CommonQueryProcessor{
 	* @return {object|array}
 	*/
 	getDefault(){
-		return config.get('default.pager');
+		return config.get('default:pager');
 	}
 }
 
