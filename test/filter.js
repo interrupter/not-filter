@@ -260,7 +260,6 @@ describe("filter", function() {
 	});
 
 	describe("parseBlock", function() {
-
 		it("block 1", function() {
 			let f = {
 				name: 'my',

@@ -127,7 +127,7 @@ class CommonQueryProcessor {
 			let additional = arguments.length>2?Array.prototype.slice.call(arguments, 2):[];
 			jsonInput = this.isJSON(input);
 			if (jsonInput){
-				input = this.isJSON(input);
+				input = JSON.parse(input);
 			}
 			output = this.parse(input, modelSchema, ...additional);
 		}else{

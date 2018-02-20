@@ -1,7 +1,8 @@
 const expect = require("chai").expect,
 	pager = require('../index.js').pager,
 	path = require('path'),
-	config = require('not-config');
+	config = require('not-config'),
+	schema = require('./schema.js');
 
 
 describe("pager", function() {
@@ -56,7 +57,30 @@ describe("pager", function() {
 			let reader = config.readerForModule('filter'),
 				result = pager.parse({page: 1});
 			expect(result).to.be.deep.equal({size: 15, skip: 15});
-		});		
+		});
+	});
+
+	describe("process", function() {
+		it("json input", function() {
+			pager.reset();
+			let input = {
+				query: {pager: {size: 24, page:2}}
+			};
+			config.init(path.join(__dirname, 'config.json'));
+			pager.process(input, schema);
+			expect(input.pager).to.be.deep.equal({size: 24, skip: 48});
+		});
+
+		it("stringified json input", function() {
+			pager.reset();
+			let line = JSON.stringify({size: 24, page:2}),
+				input = {
+					query: {pager: line}
+				};
+			config.init(path.join(__dirname, 'config.json'));
+			pager.process(input, schema);
+			expect(input.pager).to.be.deep.equal({size: 24, skip: 48});
+		});
 	});
 
 });
