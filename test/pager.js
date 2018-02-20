@@ -56,7 +56,7 @@ describe("pager", function() {
 			let reader = config.readerForModule('filter'),
 				result = pager.parse({page: 1});
 			expect(result).to.be.deep.equal({size: 15, skip: 15});
-		});
+		});		
 	});
 
 });

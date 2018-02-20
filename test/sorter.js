@@ -128,5 +128,13 @@ describe("sorter", function() {
 			sorter.process(input, schema, null);
 			expect(input).to.be.deep.equal({query:{sorter:{shadow: -1}},sorter:sorter.OPT_SORTER});
 		});
+
+		it("pass simple with JSON.strigified input", function() {
+			sorter.reset();
+			let line = JSON.stringify({shadow: -1}),
+				input = {query:{sorter:line}};
+			sorter.process(input, schema, null);
+			expect(input).to.be.deep.equal({query:{sorter:line}, sorter: sorter.OPT_SORTER});
+		});
 	});
 });

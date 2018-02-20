@@ -35,6 +35,19 @@ class CommonQueryProcessor {
 	}
 
 	/**
+	* Returns JSON if string is valid strigified JSON
+	*	@param 	{sting} str
+	*	@return {object} or false if string is not parseable
+	*/
+	isJSON(str){
+		try {
+			return (JSON.parse(str) && !!str);
+		} catch (e) {
+			return false;
+		}
+	}
+
+	/**
 	 * Inits opts
 	 * @param {object} options {inputPath:string, outputPath:string, getter:function, setter: function}
 	 */
@@ -101,6 +114,7 @@ class CommonQueryProcessor {
 
 	process(req, modelSchema){
 		let input = null,
+			jsonInput = null,
 			output = null;
 		if (typeof this.options.getter == 'function'){
 			input = this.options.getter(req, modelSchema);
@@ -111,6 +125,10 @@ class CommonQueryProcessor {
 		}
 		if (input && input!== 'undefined'){
 			let additional = arguments.length>2?Array.prototype.slice.call(arguments, 2):[];
+			jsonInput = this.isJSON(input);
+			if (jsonInput){
+				input = this.isJSON(input);
+			}
 			output = this.parse(input, modelSchema, ...additional);
 		}else{
 			output = this.getDefault();
