@@ -4,7 +4,6 @@
 
 const CommonQueryProcessor = require('./common.js'),
 	escapeStringRegexp = require('escape-string-regexp'),
-	Schema = require('mongoose').Schema,
 	notPath = require('not-path'),
 	config = require('not-config').readerForModule('filter');
 
@@ -53,24 +52,24 @@ class Search extends CommonQueryProcessor{
 			for (let k in modelSchema) {
 				if (modelSchema[k].searchable) {
 					let emptyRule = {}, t;
-					switch (modelSchema[k].type) {
-					case Number:
+					switch (modelSchema[k].type.name) {
+					case 'Number':
 						if (isNaN(filterSearchNumber)) {
 							continue;
 						} else {
 							emptyRule[k] = filterSearchNumber;
 						}
 						break;
-					case Boolean:
+					case 'Boolean':
 						t = this.getBoolean(filterSearch);
 						if (typeof t !== 'undefined') {
 							emptyRule[k] = t;
 						}
 						break;
-					case String:
+					case 'String':
 						emptyRule[k] = searchRule;
 						break;
-					case Schema.Types.Mixed:
+					case 'Mixed':
 						this.addRulesForMixed(result, input, k, modelSchema[k], helpers);
 						break;
 					default:
