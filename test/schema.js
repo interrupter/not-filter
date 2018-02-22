@@ -1,3 +1,5 @@
+const Schema = require('mongoose').Schema;
+
 module.exports = {
 	name:{
 		type: String,
@@ -16,6 +18,24 @@ module.exports = {
 		type: String,
 		sortable: false,
 		searchable: false
+	},
+	details:{
+		type: Schema.Types.Mixed,
+		sortable: false,
+		searchable: true,
+		properties: {
+			String: [
+				'title.{::lang}',
+				'articles.{::lang}.title',
+				'properties.{::prop}.title'
+			],
+			Number: [
+				'articles.{::lang}.count'
+			],
+			Boolean: [
+				'articles.{::lang}.active'
+			]
+		}
 	},
 	password:{
 		type: String,

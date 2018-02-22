@@ -111,6 +111,81 @@ describe("search", function() {
 				result = search.parse(input, schema);
 			expect(result).to.be.deep.equal([]);
 		});
+
+		it("rules for mixed, search for String", function() {
+			search.reset();
+			let input = 'legacy',
+				inputAsRegEx = new RegExp('.*' + escapeStringRegexp(input+'') + '.*', 'i'),
+				helpers = {
+					lang: ['ru','en','de', 'fr'],
+					prop: ['P180', 'P190', 'P11']
+				},
+				result = search.parse(input, schema, helpers);
+			expect(result).to.be.deep.equal([
+				{'name': inputAsRegEx},
+				{'details.title.ru': inputAsRegEx},
+				{'details.title.en': inputAsRegEx},
+				{'details.title.de': inputAsRegEx},
+				{'details.title.fr': inputAsRegEx},
+				{'details.articles.ru.title': inputAsRegEx},
+				{'details.articles.en.title': inputAsRegEx},
+				{'details.articles.de.title': inputAsRegEx},
+				{'details.articles.fr.title': inputAsRegEx},
+				{'details.properties.P180.title': inputAsRegEx},
+				{'details.properties.P190.title': inputAsRegEx},
+				{'details.properties.P11.title': inputAsRegEx}
+			]);
+		});
+
+		it("rules for mixed, search for Number", function() {
+			search.reset();
+			let input = 10,
+				inputAsRegEx = new RegExp('.*' + escapeStringRegexp(input+'') + '.*', 'i'),
+				helpers = {
+					lang: ['ru','en','de', 'fr'],
+					prop: ['P180', 'P190', 'P11']
+				},
+				result = search.parse(input, schema, helpers);
+			expect(result).to.be.deep.equal([
+				{'name': inputAsRegEx},
+				{'age': input},
+				{'details.title.ru': inputAsRegEx},
+				{'details.title.en': inputAsRegEx},
+				{'details.title.de': inputAsRegEx},
+				{'details.title.fr': inputAsRegEx},
+				{'details.articles.ru.title': inputAsRegEx},
+				{'details.articles.en.title': inputAsRegEx},
+				{'details.articles.de.title': inputAsRegEx},
+				{'details.articles.fr.title': inputAsRegEx},
+				{'details.properties.P180.title': inputAsRegEx},
+				{'details.properties.P190.title': inputAsRegEx},
+				{'details.properties.P11.title': inputAsRegEx},
+				{'details.articles.ru.count': input},
+				{'details.articles.en.count': input},
+				{'details.articles.de.count': input},
+				{'details.articles.fr.count': input},
+			]);
+		});
+
+
+		it("rules for mixed, search for Boolean", function() {
+			search.reset();
+			let input = 'true',
+				inputAsRegEx = new RegExp('.*' + escapeStringRegexp(input + '') + '.*', 'i'),
+				helpers = {
+					lang: ['ru','en','de', 'fr'],
+					prop: ['P180', 'P190', 'P11']
+				},
+				result = search.parse(input, schema, helpers);
+			expect(result).to.be.deep.equal([
+				{'name': inputAsRegEx},
+				{'active': true},
+				{'details.articles.ru.active': true},
+				{'details.articles.en.active': true},
+				{'details.articles.de.active': true},
+				{'details.articles.fr.active': true},
+			]);
+		});
 	});
 
 	describe("process", function() {

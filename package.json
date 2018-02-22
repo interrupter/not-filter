@@ -1,6 +1,6 @@
 {
 	"name": "not-filter",
-	"version": "0.0.7",
+	"version": "0.0.8",
 	"description": "not-* family filter middleware in not- environment",
 	"main": "index.js",
 	"scripts": {
@@ -28,8 +28,9 @@
 	"dependencies": {
 		"escape-string-regexp": "^1.0.5",
 		"lower-case": "^1.1.4",
-		"not-path": "*",
-		"not-config": "0.0.3"
+		"mongoose": "^5.0.6",
+		"not-config": "0.0.3",
+		"not-path": "*"
 	},
 	"devDependencies": {
 		"chai": "*",
