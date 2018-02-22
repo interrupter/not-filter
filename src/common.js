@@ -142,6 +142,7 @@ class CommonQueryProcessor {
 				}
 			}
 		}
+		return output;
 	}
 
 	/**
