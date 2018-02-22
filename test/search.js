@@ -45,6 +45,8 @@ describe("search", function() {
 			expect(result).to.be.deep.equal(
 				[{
 					'name': new RegExp('.*' + escapeStringRegexp(input) + '.*', 'i')
+				},{
+					'details': new RegExp('.*' + escapeStringRegexp(input) + '.*', 'i')
 				}]
 			);
 		});
@@ -133,7 +135,8 @@ describe("search", function() {
 				{'details.articles.fr.title': inputAsRegEx},
 				{'details.properties.P180.title': inputAsRegEx},
 				{'details.properties.P190.title': inputAsRegEx},
-				{'details.properties.P11.title': inputAsRegEx}
+				{'details.properties.P11.title': inputAsRegEx},
+				{'details': inputAsRegEx},
 			]);
 		});
 
@@ -160,6 +163,7 @@ describe("search", function() {
 				{'details.properties.P180.title': inputAsRegEx},
 				{'details.properties.P190.title': inputAsRegEx},
 				{'details.properties.P11.title': inputAsRegEx},
+				{'details': inputAsRegEx},
 				{'details.articles.ru.count': input},
 				{'details.articles.en.count': input},
 				{'details.articles.de.count': input},

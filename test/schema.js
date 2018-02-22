@@ -27,7 +27,8 @@ module.exports = {
 			String: [
 				'title.{::lang}',
 				'articles.{::lang}.title',
-				'properties.{::prop}.title'
+				'properties.{::prop}.title',
+				''
 			],
 			Number: [
 				'articles.{::lang}.count'

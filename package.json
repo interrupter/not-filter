@@ -1,6 +1,6 @@
 {
 	"name": "not-filter",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"description": "not-* family filter middleware in not- environment",
 	"main": "index.js",
 	"scripts": {

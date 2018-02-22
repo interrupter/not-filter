@@ -48,21 +48,21 @@ class Filter extends CommonQueryProcessor{
 			if (modelSchema[k].searchable && block.hasOwnProperty(k) && typeof block[k] !== 'undefined' && block[k] !== null) {
 				let searchString = block[k],
 					searchNumber = parseFloat(searchString);
-				switch (modelSchema[k].type) {
-				case Number:
+				switch (modelSchema[k].type.name) {
+				case 'Number':
 					if (isNaN(searchNumber)) {
 						continue;
 					} else {
 						emptyRule[k] = searchNumber;
 					}
 					break;
-				case Boolean:
+				case 'Boolean':
 					t = this.getBoolean(searchString);
 					if (typeof t !== 'undefined') {
 						emptyRule[k] = t;
 					}
 					break;
-				case String:
+				case 'String':
 					emptyRule[k] = searchString+'';
 					break;
 				default:

@@ -163,14 +163,20 @@ class Search extends CommonQueryProcessor{
 	*/
 	makePropertyRules(fieldName, template, helpers, rule){
 		let list = [];
-		for(let propName in helpers){
-			if (template.indexOf('::'+propName) > -1){
-				for(let prop of helpers[propName]){
-					let val = notPath.parseSubs(template, {}, {[propName]: prop});
-					if (val !== template){
-						list.push({
-							[fieldName + '.' + val]:rule
-						});
+		if (template === ''){
+			list.push({
+				[fieldName]:rule
+			});
+		}else{
+			for(let propName in helpers){
+				if (template.indexOf('::'+propName) > -1){
+					for(let prop of helpers[propName]){
+						let val = notPath.parseSubs(template, {}, {[propName]: prop});
+						if (val !== template){
+							list.push({
+								[fieldName + '.' + val]:rule
+							});
+						}
 					}
 				}
 			}
