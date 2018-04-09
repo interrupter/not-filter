@@ -3,7 +3,8 @@
 */
 
 const CommonQueryProcessor = require('./common.js'),
-	config = require('not-config').readerForModule('filter');
+	config = require('not-config').readerForModule('filter'),
+	mongooseTypes = require('mongoose').Schema.Types;
 
 /**
  * @const {string} OPT_INPUT_PATH
@@ -67,6 +68,18 @@ class Filter extends CommonQueryProcessor{
 					break;
 				default:
 					continue;
+				}
+			}else{
+				if(modelSchema[k].type === mongooseTypes.Mixed){
+					for(let fieldName in block){
+						if(fieldName.indexOf(k + '.') === 0){
+							if(modelSchema[k].filterConverter){
+								emptyRule[fieldName] = modelSchema[k].filterConverter(k, block[k]);
+							}else{
+								emptyRule[fieldName] = block[k];
+							}
+						}
+					}
 				}
 			}
 		}

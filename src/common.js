@@ -3,7 +3,8 @@
  */
 
 const notPath = require('not-path'),
-	lowerCase = require('lower-case');
+	lowerCase = require('lower-case'),
+	escapeStringRegexp = require('escape-string-regexp');
 
 /**
  * @const {string} OPT_OR
@@ -199,6 +200,98 @@ class CommonQueryProcessor {
 			filter = Object.assign(filter, rule);
 		}
 		return filter;
+	}
+
+	/**
+	*	Creates rules for Schema.Types.Mixed
+	*	@param {array} filter filter object
+	*	@param {string} input search string
+	*	@param {object} fieldName name of schema field
+	*	@param {object} fieldSchema search string
+	*	@param {object} helpers helpers for properties path generation
+	*/
+	addRulesForMixed(filter, input, fieldName, fieldSchema, helpers){
+		let filterSearch = input.toString(),
+			filterSearchNumber = parseInt(filterSearch),
+			searchRule = new RegExp('.*' + escapeStringRegexp(filterSearch) + '.*', 'i');
+		if(fieldSchema && fieldSchema.hasOwnProperty('properties')){
+			for(let type in fieldSchema.properties){
+				let t;
+				switch(type){
+				case 'Number':
+					if (isNaN(filterSearchNumber)) {
+						continue;
+					} else {
+						this.makePropertiesRules(filter, fieldName, fieldSchema.properties[type], helpers, filterSearchNumber);
+					}
+					break;
+				case 'Boolean':
+					t = this.getBoolean(filterSearch);
+					if (typeof t !== 'undefined') {
+						this.makePropertiesRules(filter, fieldName, fieldSchema.properties[type], helpers, t);
+					}
+					break;
+				case 'String':
+					t = this.getBoolean(filterSearch);
+					if (typeof t === 'undefined'){
+						this.makePropertiesRules(filter, fieldName, fieldSchema.properties[type], helpers, searchRule);
+					}
+					break;
+				default:
+					continue;
+				}
+			}
+		}
+	}
+
+	/**
+	*	Creates rules for Schema.Types.Mixed, generating properties path from
+	*	templates and helpers
+	*	@param {array} filter filter object
+	*	@param {object} fieldName name of schema field
+	*	@param {array} properties array of properties path templates
+	*	@param {object} helpers helpers for properties path generation
+	*	@param {string|number|boolean} rule rule for search
+	*/
+	makePropertiesRules(filter, fieldName, properties, helpers, rule){
+		for(let i = 0; i < properties.length; i++){
+			let list = this.makePropertyRules(fieldName, properties[i], helpers, rule);
+			if (list.length){
+				filter.push(...list);
+			}
+		}
+	}
+
+	/**
+	*	Creates rules for Schema.Types.Mixed, generating properties path from
+	*	templates and helpers
+	*	@param {object} fieldName name of schema field
+	*	@param {string} template property path template
+	*	@param {object} helpers helpers for properties path generation
+	*	@param {string|number|boolean} rule rule for search
+	*	@return {array}	list of rules
+	*/
+	makePropertyRules(fieldName, template, helpers, rule){
+		let list = [];
+		if (template === ''){
+			list.push({
+				[fieldName]:rule
+			});
+		}else{
+			for(let propName in helpers){
+				if (template.indexOf('::'+propName) > -1){
+					for(let prop of helpers[propName]){
+						let val = notPath.parseSubs(template, {}, {[propName]: prop});
+						if (val !== template){
+							list.push({
+								[fieldName + '.' + val]:rule
+							});
+						}
+					}
+				}
+			}
+		}
+		return list;
 	}
 }
 
