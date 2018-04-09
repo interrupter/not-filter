@@ -74,9 +74,9 @@ class Filter extends CommonQueryProcessor{
 					for(let fieldName in block){
 						if(fieldName.indexOf(k + '.') === 0){
 							if(modelSchema[k].filterConverter){
-								emptyRule[fieldName] = modelSchema[k].filterConverter(k, block[k]);
+								emptyRule[fieldName] = modelSchema[k].filterConverter(fieldName, block[fieldName]);
 							}else{
-								emptyRule[fieldName] = block[k];
+								emptyRule[fieldName] = block[fieldName];
 							}
 						}
 					}

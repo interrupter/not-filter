@@ -36,7 +36,8 @@ module.exports = {
 			Boolean: [
 				'articles.{::lang}.active'
 			]
-		}
+		},
+		filterConverter: (key, val)=>{return parseInt(val)+1;}
 	},
 	password:{
 		type: String,

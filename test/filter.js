@@ -315,5 +315,15 @@ describe("filter", function() {
 			};
 			expect(filter.parseBlock(f, schema)).to.be.deep.equal({active: false});
 		});
+
+		it("block 6", function() {
+			let f = {
+				shadow: 'tactics',
+				'details.googleIt': 1,
+				age: null,
+				roles: ['user']
+			};
+			expect(filter.parseBlock(f, schema)).to.be.deep.equal({'details.googleIt': 2});
+		});
 	});
 });
