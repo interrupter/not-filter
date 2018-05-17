@@ -3,7 +3,7 @@
 */
 
 const CommonQueryProcessor = require('./common.js'),
-	escapeStringRegexp = require('escape-string-regexp'),	
+	escapeStringRegexp = require('escape-string-regexp'),
 	config = require('not-config').readerForModule('filter');
 
 /**
@@ -38,6 +38,7 @@ class Search extends CommonQueryProcessor{
 	* Parses
 	* @param {object|array} input filter
 	* @param {object} modelSchema not model schema
+	* @param {object} helpers various helpers: libs, consts and etc
 	* @return {object|array} parsed filter
 	*/
 	parse(input, modelSchema, helpers){
@@ -48,28 +49,28 @@ class Search extends CommonQueryProcessor{
 			let filterSearch = input.toString(),
 				filterSearchNumber = parseInt(filterSearch),
 				searchRule = new RegExp('.*' + escapeStringRegexp(filterSearch) + '.*', 'i');
-			for (let k in modelSchema) {
-				if (modelSchema[k].searchable) {
+			for (let fieldName in modelSchema) {
+				if (modelSchema[fieldName].searchable) {
 					let emptyRule = {}, t;
-					switch (modelSchema[k].type.name) {
+					switch (modelSchema[fieldName].type.name) {
 					case 'Number':
 						if (isNaN(filterSearchNumber)) {
 							continue;
 						} else {
-							emptyRule[k] = filterSearchNumber;
+							emptyRule[fieldName] = filterSearchNumber;
 						}
 						break;
 					case 'Boolean':
 						t = this.getBoolean(filterSearch);
 						if (typeof t !== 'undefined') {
-							emptyRule[k] = t;
+							emptyRule[fieldName] = t;
 						}
 						break;
 					case 'String':
-						emptyRule[k] = searchRule;
+						emptyRule[fieldName] = searchRule;
 						break;
 					case 'Mixed':
-						this.addRulesForMixed(result, input, k, modelSchema[k], helpers);
+						this.addRulesForMixed(result, input, fieldName, modelSchema[fieldName], helpers);
 						break;
 					default:
 						continue;

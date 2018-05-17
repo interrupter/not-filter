@@ -46,5 +46,15 @@ module.exports = {
 	roles:{
 		type: Set,
 		searchable: true
+	},
+	alias:{
+		type: Schema.Types.Mixed,
+		sortable: false,
+		searchable: true,
+		properties: {
+			String: [
+				'{::lang}'
+			]
+		}
 	}
 };

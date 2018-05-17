@@ -41,42 +41,41 @@ class Filter extends CommonQueryProcessor{
 	 * @param {object} modelSchema notModelSchema
 	 * @return {object} filter rule
 	 */
-
 	parseBlock(block, modelSchema){
 		let emptyRule = {},
 			t;
-		for (let k in modelSchema) {
-			if (modelSchema[k].searchable && block.hasOwnProperty(k) && typeof block[k] !== 'undefined' && block[k] !== null) {
-				let searchString = block[k],
+		for (let fieldName in modelSchema) {
+			if (modelSchema[fieldName].searchable && block.hasOwnProperty(fieldName) && typeof block[fieldName] !== 'undefined' && block[fieldName] !== null) {
+				let searchString = block[fieldName],
 					searchNumber = parseFloat(searchString);
-				switch (modelSchema[k].type.name) {
+				switch (modelSchema[fieldName].type.name) {
 				case 'Number':
 					if (isNaN(searchNumber)) {
 						continue;
 					} else {
-						emptyRule[k] = searchNumber;
+						emptyRule[fieldName] = searchNumber;
 					}
 					break;
 				case 'Boolean':
 					t = this.getBoolean(searchString);
 					if (typeof t !== 'undefined') {
-						emptyRule[k] = t;
+						emptyRule[fieldName] = t;
 					}
 					break;
 				case 'String':
-					emptyRule[k] = searchString+'';
+					emptyRule[fieldName] = searchString+'';
 					break;
 				default:
 					continue;
 				}
 			}else{
-				if(modelSchema[k].type === mongooseTypes.Mixed){
-					for(let fieldName in block){
-						if(fieldName.indexOf(k + '.') === 0){
-							if(modelSchema[k].filterConverter){
-								emptyRule[fieldName] = modelSchema[k].filterConverter(fieldName, block[fieldName]);
+				if(modelSchema[fieldName].type === mongooseTypes.Mixed){
+					for(let filterFieldName in block){						
+						if(filterFieldName.indexOf(fieldName + '.') === 0){
+							if(modelSchema[fieldName].filterConverter){
+								emptyRule[filterFieldName] = modelSchema[fieldName].filterConverter(fieldName, block[filterFieldName]);
 							}else{
-								emptyRule[fieldName] = block[fieldName];
+								emptyRule[fieldName] = block[filterFieldName];
 							}
 						}
 					}
@@ -93,9 +92,9 @@ class Filter extends CommonQueryProcessor{
 	 * @param {object} 	modelSchema 	not model schema
 	 * @return {object}	filter
 	 */
-	parseAsAnd(input, modelSchema){
+	parseAsAnd(input, modelSchema, helpers){
 		let filter = this.createFilter(this.OPT_AND),
-			rule = this.parseBlock(input, modelSchema);
+			rule = this.parseBlock(input, modelSchema, helpers);
 		filter = this.addRule(filter, rule);
 		return filter;
 	}
@@ -106,10 +105,10 @@ class Filter extends CommonQueryProcessor{
 	 * @param {object} 	modelSchema 	not model schema
 	 * @return {object}	filter
 	 */
-	parseAsOr(input, modelSchema){
+	parseAsOr(input, modelSchema, helpers){
 		let filter = this.createFilter(this.OPT_OR);
 		for(let t = 0; t < input.length; t++){
-			filter = this.addRule(filter, this.parseBlock(input[t], modelSchema));
+			filter = this.addRule(filter, this.parseBlock(input[t], modelSchema, helpers));
 		}
 		return filter;
 	}
@@ -120,14 +119,15 @@ class Filter extends CommonQueryProcessor{
 	* @param {object} modelSchema not model schema
 	* @return {object|array} parsed filter
 	*/
-	parse(input, modelSchema){
+	parse(input, modelSchema, helpers){
 		let result;
 		//array for ||
 		//object for &&
 		switch (this.getFilterType(input)){
-		case this.OPT_AND: result = this.parseAsAnd(input, modelSchema);break;
-		case this.OPT_OR: result = this.parseAsOr(input, modelSchema);break;
+		case this.OPT_AND: result = this.parseAsAnd(input, modelSchema, helpers);	break;
+		case this.OPT_OR: result = this.parseAsOr(input, modelSchema, helpers);		break;
 		}
+
 		return result;
 	}
 

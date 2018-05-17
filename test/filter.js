@@ -325,5 +325,6 @@ describe("filter", function() {
 			};
 			expect(filter.parseBlock(f, schema)).to.be.deep.equal({'details.googleIt': 2});
 		});
+
 	});
 });

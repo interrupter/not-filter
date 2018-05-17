@@ -137,6 +137,10 @@ describe("search", function() {
 				{'details.properties.P190.title': inputAsRegEx},
 				{'details.properties.P11.title': inputAsRegEx},
 				{'details': inputAsRegEx},
+				{'alias.ru': inputAsRegEx},
+				{'alias.en': inputAsRegEx},
+				{'alias.de': inputAsRegEx},
+				{'alias.fr': inputAsRegEx},
 			]);
 		});
 
@@ -168,6 +172,10 @@ describe("search", function() {
 				{'details.articles.en.count': input},
 				{'details.articles.de.count': input},
 				{'details.articles.fr.count': input},
+				{'alias.ru': inputAsRegEx},
+				{'alias.en': inputAsRegEx},
+				{'alias.de': inputAsRegEx},
+				{'alias.fr': inputAsRegEx},
 			]);
 		});
 
