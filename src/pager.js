@@ -42,10 +42,12 @@ class Pager extends CommonQueryProcessor{
 	parse(input){
 		let defaultSize = isNaN(parseInt(config.get('size')))? OPT_DEFAULT_SIZE:parseInt(config.get('size')),
 			size = (!input || isNaN(parseInt(input.size)))? defaultSize : parseInt(input.size),
-			skip = (!input || isNaN(parseInt(input.page)) )?  0: ((Math.max(0, input.page)) * size);
+			skip = (!input || isNaN(parseInt(input.page)) )?  0: ((Math.max(0, input.page)) * size),
+			page = Math.floor(skip / size);
 		return {
 			size,
-			skip
+			skip,
+			page
 		};
 	}
 

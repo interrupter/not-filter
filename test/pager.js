@@ -42,13 +42,13 @@ describe("pager", function() {
 		it("empty", function() {
 			pager.reset();
 			let result = pager.parse();
-			expect(result).to.be.deep.equal({size: 100, skip: 0});
+			expect(result).to.be.deep.equal({size: 100, skip: 0, page: 0});
 		});
 
 		it("pass simple without config", function() {
 			pager.reset();
 			let result = pager.parse({size: 10, page: 1});
-			expect(result).to.be.deep.equal({size: 10, skip: 10});
+			expect(result).to.be.deep.equal({size: 10, skip: 10, page: 1});
 		});
 
 		it("pass simple with config", function() {
@@ -56,7 +56,7 @@ describe("pager", function() {
 			config.init(path.join(__dirname, 'config.json'));
 			let reader = config.readerForModule('filter'),
 				result = pager.parse({page: 1});
-			expect(result).to.be.deep.equal({size: 15, skip: 15});
+			expect(result).to.be.deep.equal({size: 15, skip: 15, page: 1});
 		});
 	});
 
@@ -68,7 +68,7 @@ describe("pager", function() {
 			};
 			config.init(path.join(__dirname, 'config.json'));
 			pager.process(input, schema);
-			expect(input.pager).to.be.deep.equal({size: 24, skip: 48});
+			expect(input.pager).to.be.deep.equal({size: 24, skip: 48, page: 2});
 		});
 
 		it("stringified json input", function() {
@@ -79,7 +79,7 @@ describe("pager", function() {
 				};
 			config.init(path.join(__dirname, 'config.json'));
 			pager.process(input, schema);
-			expect(input.pager).to.be.deep.equal({size: 24, skip: 48});
+			expect(input.pager).to.be.deep.equal({size: 24, skip: 48, page:2});
 		});
 	});
 
