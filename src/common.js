@@ -194,10 +194,27 @@ class CommonQueryProcessor {
 	 * @return {array|object} filter
 	 */
 	addRule(filter, rule){
-		if (Array.isArray(filter)){
+		if (this.getFilterType(filter) === OPT_OR){
 			filter.push(rule);
 		}else{
 			filter = Object.assign(filter, rule);
+		}
+		return filter;
+	}
+
+	/**
+	 * Modifies existing rules
+	 * @param {array|object} 	filter 	filter object
+	 * @param {object} 			rule 	mixture rule
+	 * @return {array|object} 			filter
+	 */
+	modifyRules(filter, rule){
+		if (this.getFilterType(filter) === OPT_OR){
+			for(let i = 0; i < filter.length; i++){
+				filter[i] = this.modifyRules(filter[i], rule);
+			}
+		}else{
+			filter = this.addRule(filter, rule);
 		}
 		return filter;
 	}

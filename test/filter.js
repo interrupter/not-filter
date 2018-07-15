@@ -89,6 +89,32 @@ describe("filter", function() {
 		});
 	});
 
+	describe("modifyRules", function() {
+		it("passed in `AND` filter and object", function() {
+			let f = {};
+			expect(filter.modifyRules(f, {field: 'rule'})).to.be.deep.equal({
+				field: 'rule'
+			});
+		});
+
+		it("passed in `OR` filter and object", function() {
+			let f = [{field0:'field0'},{field1:'field1'},{field3:'field3'},{field:'field'}];
+			expect(filter.modifyRules(f, {field: 'rule'})).to.be.deep.equal([
+				{
+					field0:'field0',
+					field: 'rule'
+				},{
+					field1:'field1',
+					field: 'rule'
+				},{
+					field3:'field3',
+					field: 'rule'
+				},{
+					field: 'rule'
+				}]);
+		});
+	});
+
 	describe("process", function() {
 		it("passed in `OR` filter and object", function() {
 			filter.reset();
