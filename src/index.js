@@ -1,5 +1,12 @@
-exports.filter = require('./filter.js');
-exports.search = require('./search.js');
-exports.sorter = require('./sort.js');
-exports.return = require('./return.js');
-exports.pager = require('./pager.js');
+module.exports = {
+	name: 'not-filter',
+	paths:{
+		controllers:  __dirname + '/front/controllers',
+		templates:    __dirname + '/front/templates'
+	},
+	filter:    require('./back/filter.js'),
+	search:    require('./back/search.js'),
+	sorter:    require('./back/sort.js'),
+	return:    require('./back/return.js'),
+	pager:     require('./back/pager.js'),
+};

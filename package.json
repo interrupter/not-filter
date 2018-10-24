@@ -26,8 +26,10 @@
 	},
 	"homepage": "https://github.com/interrupter/not-filter#readme",
 	"dependencies": {
+		"browserify": "^16.2.3",
 		"escape-string-regexp": "^1.0.5",
 		"lower-case": "^1.1.4",
+		"mongoose": "^5.3.6",
 		"not-config": "0.0.3",
 		"not-path": "*"
 	},
