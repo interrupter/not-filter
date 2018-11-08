@@ -43,7 +43,7 @@ const OPT_DEFAULT_PAGE_SIZE = 20,
 	}
 */
 
-export class notFilter extends notFramework.notBase{
+class notFilter extends notFramework.notBase{
 	constructor(input){
 		super(input);
 		this.data = new notFramework.notRecord({}, {
@@ -64,9 +64,9 @@ export class notFilter extends notFramework.notBase{
 		});
 	}
 
-	///////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 	////navigation
-	///////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////
 	getNext() {
 		let next = isNaN(this.getWorking('pager').page) ? this.getDefaultPageNumber() : this.getWorking('pager').page + 1;
 		this.getWorking('pager').page = Math.min(next, this.data.pagination.pages.to);
@@ -252,3 +252,5 @@ export class notFilter extends notFramework.notBase{
 		return this.getWorking('pager');
 	}
 }
+
+export default notFilter;

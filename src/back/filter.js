@@ -126,7 +126,6 @@ class Filter extends CommonQueryProcessor{
 		case this.OPT_AND: result = this.parseAsAnd(input, modelSchema, helpers);	break;
 		case this.OPT_OR: result = this.parseAsOr(input, modelSchema, helpers);		break;
 		}
-
 		return result;
 	}
 
