@@ -83,4 +83,20 @@ describe("pager", function() {
 		});
 	});
 
+	describe("getForPage", function() {
+		it("page input", function() {
+			pager.reset();
+			config.init(path.join(__dirname, 'config.json'));
+			let pagerFotThird = pager.getForPage(3);
+			expect(pagerFotThird).to.be.deep.equal({size: 15, skip: 45, page: 3});
+		});
+
+		it("getForPage with custom page size", function() {
+			pager.reset();
+			config.init(path.join(__dirname, 'config.json'));
+			let pagerFotThird = pager.getForPage(4, 20);
+			expect(pagerFotThird).to.be.deep.equal({size: 20, skip: 80, page: 4});
+		});
+	});
+
 });

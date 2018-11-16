@@ -58,6 +58,24 @@ class Pager extends CommonQueryProcessor{
 	getDefault(){
 		return config.get('default:pager');
 	}
+
+	/**
+	* Returns value fo specified page number
+	*	@param	{number}	inputPage
+	*	@param	{number}	inputSize
+	* @return {object|array}
+	*/
+	getForPage(inputPage = 0, inputSize = null){
+		let defaultSize = isNaN(parseInt(config.get('size')))? OPT_DEFAULT_SIZE:parseInt(config.get('size')),
+			size = (!inputSize || isNaN(parseInt(inputSize)))? defaultSize : parseInt(inputSize),
+			skip = (!inputPage || isNaN(parseInt(inputPage)) )?  0: ((Math.max(0, inputPage)) * size),
+			page = Math.floor(skip / size);
+		return {
+			size,
+			skip,
+			page
+		};
+	}
 }
 
 module.exports = new Pager();
