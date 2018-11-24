@@ -351,6 +351,16 @@ describe("filter", function() {
 			};
 			expect(filter.parseBlock(f, schema)).to.be.deep.equal({'details.googleIt': 2});
 		});
+	});
 
+	describe("createRulesMatrix", function() {
+		it("simple 2 x 2 rules matrix", function() {
+			let dim1 = [{i:1},{x:3}],
+				dim2 = [{h:1},{z:3}],
+				desired = [{i:1, h:1}, {i:1, z:3}, {x:3,h:1}, {x:3,z:3}],
+				result = filter.createRulesMatrix(dim1, dim2);
+			expect(result.length).to.be.equal(desired.length);
+			expect(result).to.be.deep.equal(desired);
+		});
 	});
 });

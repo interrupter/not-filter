@@ -313,7 +313,7 @@ class CommonQueryProcessor {
 
 	/**
 	*	Creates OR set from two OR sets by unifing individual rules from each set
-	*	[{i:1},{x:3}]*[{h:1},{z:3}] => [{i:1, h:1}][{i:1, z:3}][{x:3,h:1}][{x:3,z:3}]
+	*	[{i:1},{x:3}]*[{h:1},{z:3}] => [{i:1, h:1},{i:1, z:3},{x:3,h:1},{x:3,z:3}]
 	*	Returns newly created array of rules
 	*	@param	{array}	dim1	first set of OR rules
 	*	@param	{array}	dim2	second set of OR rules
@@ -326,6 +326,7 @@ class CommonQueryProcessor {
 				result.push(Object.assign({}, dim1[x], dim2[y]));
 			}
 		}
+		return result;
 	}
 }
 
