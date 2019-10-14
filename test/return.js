@@ -143,6 +143,33 @@ describe("return", function() {
 			}]);
 		});
 
+		it("plain schema with faulty array data and array input", function() {
+			let input = ['name','age'],
+				data = [{
+					name: 'alex',
+					age: 30,
+					active: true,
+					roles: new Set()
+				},
+				null,
+				{
+					name: 'xerox',
+					age: 90,
+					active: false,
+					roles: null
+				}],
+				returnData = returnFilter.parse(input, schema, data);
+			expect(returnData).to.be.deep.equal([{
+				name: 'alex',
+				age: 30
+			},
+			null,
+			{
+				name: 'xerox',
+				age: 90
+			}]);
+		});
+
 		it("plain schema with faulty array data 2", function() {
 			let input = {
 					name: 'name',

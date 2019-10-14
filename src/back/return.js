@@ -42,7 +42,7 @@ class Return extends CommonQueryProcessor{
 	parseItem(input, modelSchema, item){
 		if (typeof item === 'object' ){
 			for(let t in item){
-				if (!input.hasOwnProperty(t)){
+				if (input.indexOf(t)===-1){
 					delete item[t];
 				}
 			}
@@ -57,15 +57,26 @@ class Return extends CommonQueryProcessor{
 	* @return {object|array} parsed filter
 	*/
 	parse(input, modelSchema, data){
-		let result = data;
-		if (typeof input !== 'undefined' && typeof input === 'object' && Object.keys(input).length>0){
-			if (Array.isArray(result)){
-				result.forEach((item)=>{return this.parseItem(input, modelSchema, item);});
+		if(typeof input === 'undefined'){
+			return data;
+		}else{
+			let result = data,
+				fields = [];
+			if(Array.isArray(input)){
+				fields = input;
+			}else if (typeof input === 'object' && Object.keys(input).length > 0){
+				fields = Object.keys(input);
 			}else{
-				this.parseItem(input, modelSchema, result);
+				return data;
 			}
+
+			if (Array.isArray(result)){
+				result.forEach((item)=>{return this.parseItem(fields, modelSchema, item);});
+			}else{
+				this.parseItem(fields, modelSchema, result);
+			}
+			return result;
 		}
-		return result;
 	}
 
 	/**
