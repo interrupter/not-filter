@@ -3,7 +3,6 @@
  */
 
 const notPath = require('not-path'),
-	lowerCase = require('lower-case'),
 	escapeStringRegexp = require('escape-string-regexp');
 
 /**
@@ -92,7 +91,7 @@ class CommonQueryProcessor {
 	 */
 	getBoolean(val){
 		let t = parseInt(val),
-			s = lowerCase(val);
+			s = (val?val.toString():'').toLowerCase();
 		if (t === 0 || t === 1) {
 			return !!t;
 		} else {
