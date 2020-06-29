@@ -16,7 +16,7 @@ const OPT_OR = 'or';
 const OPT_AND = 'and';
 
 class CommonQueryProcessor {
-	constructor(defaults){
+	constructor(defaults) {
 		this.defaults = {
 			input: defaults.input,
 			output: defaults.output,
@@ -35,11 +35,11 @@ class CommonQueryProcessor {
 	}
 
 	/**
-	* Returns JSON if string is valid strigified JSON
-	*	@param 	{sting} str
-	*	@return {object} or false if string is not parseable
-	*/
-	isJSON(str){
+	 * Returns JSON if string is valid strigified JSON
+	 *	@param 	{sting} str
+	 *	@return {object} or false if string is not parseable
+	 */
+	isJSON(str) {
 		try {
 			return (JSON.parse(str) && !!str);
 		} catch (e) {
@@ -52,19 +52,19 @@ class CommonQueryProcessor {
 	 * @param {object} options {inputPath:string, outputPath:string, getter:function, setter: function}
 	 */
 
-	init(options){
-		if (options){
-			if(options.input){
+	init(options) {
+		if (options) {
+			if (options.input) {
 				//console.log();
 				this.options.input = options.input;
 			}
-			if(options.output){
+			if (options.output) {
 				this.options.output = options.output;
 			}
-			if(options.getter){
+			if (options.getter) {
 				this.options.getter = options.getter;
 			}
-			if(options.setter){
+			if (options.setter) {
 				this.options.setter = options.setter;
 			}
 		}
@@ -77,7 +77,7 @@ class CommonQueryProcessor {
 	 * Reset filter options to default
 	 */
 
-	reset(){
+	reset() {
 		this.options.input = this.defaults.input;
 		this.options.output = this.defaults.output;
 		this.options.getter = this.defaults.getter;
@@ -89,9 +89,9 @@ class CommonQueryProcessor {
 	 * @param {string|number|boolean|any} val some value to be reduced to true/false
 	 * @return {boolean|undefined} if can determine goes with boolean else return undefined
 	 */
-	getBoolean(val){
+	getBoolean(val) {
 		let t = parseInt(val),
-			s = (val?val.toString():'').toLowerCase();
+			s = (val ? val.toString() : '').toLowerCase();
 		if (t === 0 || t === 1) {
 			return !!t;
 		} else {
@@ -112,32 +112,32 @@ class CommonQueryProcessor {
 	 * @param {object} modelSchema model schema for parsing rules
 	 */
 
-	process(req, modelSchema){
+	process(req, modelSchema) {
 		let input = null,
 			jsonInput = null,
 			output = null;
-		if (typeof this.options.getter == 'function'){
+		if (typeof this.options.getter == 'function') {
 			input = this.options.getter(req, modelSchema);
-		}else{
-			if (this.options.input){
+		} else {
+			if (this.options.input) {
 				input = notPath.get(this.options.input, req, {});
 			}
 		}
-		if (input && input!== 'undefined'){
-			let additional = arguments.length>2?Array.prototype.slice.call(arguments, 2):[];
+		if (input && input !== 'undefined') {
+			let additional = arguments.length > 2 ? Array.prototype.slice.call(arguments, 2) : [];
 			jsonInput = this.isJSON(input);
-			if (jsonInput){
+			if (jsonInput) {
 				input = JSON.parse(input);
 			}
 			output = this.parse(input, modelSchema, ...additional);
-		}else{
+		} else {
 			output = this.getDefault();
 		}
-		if (output){
-			if (typeof this.options.setter == 'function'){
+		if (output) {
+			if (typeof this.options.setter == 'function') {
 				this.options.setter(req, output, modelSchema);
-			}else{
-				if(this.options.output){
+			} else {
+				if (this.options.output) {
 					notPath.set(this.options.output, req, output);
 				}
 			}
@@ -151,16 +151,16 @@ class CommonQueryProcessor {
 	 * @return {OPT_OR|OPT_AND|false} type of filter
 	 **/
 
-	getFilterType(filter){
-		if (filter && (typeof filter !== undefined) && (filter !== null)){
-			if (Array.isArray(filter)){
+	getFilterType(filter) {
+		if (filter && (typeof filter !== undefined) && (filter !== null)) {
+			if (Array.isArray(filter)) {
 				return OPT_OR;
-			}else if (filter.constructor === Object){
+			} else if (filter.constructor === Object) {
 				return OPT_AND;
-			}else{
+			} else {
 				return false;
 			}
-		}else{
+		} else {
 			return false;
 		}
 	}
@@ -173,9 +173,9 @@ class CommonQueryProcessor {
 	 * @return {array|object} filter
 	 */
 
-	createFilter(filterType = OPT_OR){
+	createFilter(filterType = OPT_OR) {
 		let result;
-		switch(filterType){
+		switch (filterType) {
 		case OPT_AND:
 			result = {};
 			break;
@@ -192,10 +192,10 @@ class CommonQueryProcessor {
 	 * @param {object} rule additional rule
 	 * @return {array|object} filter
 	 */
-	addRule(filter, rule){
-		if (this.getFilterType(filter) === OPT_OR){
+	addRule(filter, rule) {
+		if (this.getFilterType(filter) === OPT_OR) {
 			filter.push(rule);
-		}else{
+		} else {
 			filter = Object.assign(filter, rule);
 		}
 		return filter;
@@ -207,33 +207,33 @@ class CommonQueryProcessor {
 	 * @param {object} 			rule 	mixture rule
 	 * @return {array|object} 			filter
 	 */
-	modifyRules(filter, rule){
-		if (this.getFilterType(filter) === OPT_OR){
-			for(let i = 0; i < filter.length; i++){
+	modifyRules(filter, rule) {
+		if (this.getFilterType(filter) === OPT_OR) {
+			for (let i = 0; i < filter.length; i++) {
 				filter[i] = this.modifyRules(filter[i], rule);
 			}
-		}else{
+		} else {
 			filter = this.addRule(filter, rule);
 		}
 		return filter;
 	}
 
 	/**
-	*	Creates rules for Schema.Types.Mixed
-	*	@param {array} filter filter object
-	*	@param {string} input search string
-	*	@param {object} fieldName name of schema field
-	*	@param {object} fieldSchema search string
-	*	@param {object} helpers helpers for properties path generation
-	*/
-	addRulesForMixed(filter, input, fieldName, fieldSchema, helpers){
+	 *	Creates rules for Schema.Types.Mixed
+	 *	@param {array} filter filter object
+	 *	@param {string} input search string
+	 *	@param {object} fieldName name of schema field
+	 *	@param {object} fieldSchema search string
+	 *	@param {object} helpers helpers for properties path generation
+	 */
+	addRulesForMixed(filter, input, fieldName, fieldSchema, helpers) {
 		let filterSearch = input.toString(),
 			filterSearchNumber = parseInt(filterSearch),
 			searchRule = new RegExp('.*' + escapeStringRegexp(filterSearch) + '.*', 'i');
-		if(fieldSchema && fieldSchema.hasOwnProperty('properties')){
-			for(let type in fieldSchema.properties){
+		if (fieldSchema && fieldSchema.hasOwnProperty('properties')) {
+			for (let type in fieldSchema.properties) {
 				let t;
-				switch(type){
+				switch (type) {
 				case 'Number':
 					if (isNaN(filterSearchNumber)) {
 						continue;
@@ -249,7 +249,7 @@ class CommonQueryProcessor {
 					break;
 				case 'String':
 					t = this.getBoolean(filterSearch);
-					if (typeof t === 'undefined'){
+					if (typeof t === 'undefined') {
 						this.makePropertiesRules(filter, fieldName, fieldSchema.properties[type], helpers, searchRule);
 					}
 					break;
@@ -261,46 +261,52 @@ class CommonQueryProcessor {
 	}
 
 	/**
-	*	Creates rules for Schema.Types.Mixed, generating properties path from
-	*	templates and helpers
-	*	@param {array} filter filter object
-	*	@param {object} fieldName name of schema field
-	*	@param {array} properties array of properties path templates
-	*	@param {object} helpers helpers for properties path generation
-	*	@param {string|number|boolean} rule rule for search
-	*/
-	makePropertiesRules(filter, fieldName, properties, helpers, rule){
-		for(let i = 0; i < properties.length; i++){
+	 *	Creates rules for Schema.Types.Mixed, generating properties path from
+	 *	templates and helpers
+	 *	@param {array} filter filter object
+	 *	@param {object} fieldName name of schema field
+	 *	@param {array} properties array of properties path templates
+	 *	@param {object} helpers helpers for properties path generation
+	 *	@param {string|number|boolean} rule rule for search
+	 */
+	makePropertiesRules(filter, fieldName, properties, helpers, rule) {
+		for (let i = 0; i < properties.length; i++) {
 			let list = this.makePropertyRules(fieldName, properties[i], helpers, rule);
-			if (list.length){
+			if (list.length) {
 				filter.push(...list);
 			}
 		}
 	}
 
 	/**
-	*	Creates rules for Schema.Types.Mixed, generating properties path from
-	*	templates and helpers
-	*	@param {object} fieldName name of schema field
-	*	@param {string} template property path template
-	*	@param {object} helpers helpers for properties path generation
-	*	@param {string|number|boolean} rule rule for search
-	*	@return {array}	list of rules
-	*/
-	makePropertyRules(fieldName, template, helpers, rule){
+	 *	Creates rules for Schema.Types.Mixed, generating properties path from
+	 *	templates and helpers
+	 *	@param {object} fieldName name of schema field
+	 *	@param {string} template property path template
+	 *	@param {object} helpers helpers for properties path generation
+	 *	@param {string|number|boolean} rule rule for search
+	 *	@return {array}	list of rules
+	 */
+	makePropertyRules(fieldName, template, helpers, rule) {
 		let list = [];
-		if (template === ''){
+		if (template === '') {
 			list.push({
-				[fieldName]:rule
+				[fieldName]: rule
 			});
-		}else{
-			for(let propName in helpers){
-				if (template.indexOf('::'+propName) > -1){
-					for(let prop of helpers[propName]){
-						let val = notPath.parseSubs(template, {}, {[propName]: prop});
-						if (val !== template){
+		} else if(template.indexOf('::') === -1){
+			list.push({
+				[`${fieldName}.${template}`]: rule
+			});
+		}else {
+			for (let propName in helpers) {
+				if (template.indexOf('::' + propName) > -1) {
+					for (let prop of helpers[propName]) {
+						let val = notPath.parseSubs(template, {}, {
+							[propName]: prop
+						});
+						if (val !== template) {
 							list.push({
-								[fieldName + '.' + val]:rule
+								[fieldName + '.' + val]: rule
 							});
 						}
 					}
@@ -311,17 +317,17 @@ class CommonQueryProcessor {
 	}
 
 	/**
-	*	Creates OR set from two OR sets by unifing individual rules from each set
-	*	[{i:1},{x:3}]*[{h:1},{z:3}] => [{i:1, h:1},{i:1, z:3},{x:3,h:1},{x:3,z:3}]
-	*	Returns newly created array of rules
-	*	@param	{array}	dim1	first set of OR rules
-	*	@param	{array}	dim2	second set of OR rules
-	*	@param	{array}				result of multiplication
-	*/
-	createRulesMatrix(dim1, dim2){
+	 *	Creates OR set from two OR sets by unifing individual rules from each set
+	 *	[{i:1},{x:3}]*[{h:1},{z:3}] => [{i:1, h:1},{i:1, z:3},{x:3,h:1},{x:3,z:3}]
+	 *	Returns newly created array of rules
+	 *	@param	{array}	dim1	first set of OR rules
+	 *	@param	{array}	dim2	second set of OR rules
+	 *	@param	{array}				result of multiplication
+	 */
+	createRulesMatrix(dim1, dim2) {
 		let result = [];
-		for(let x in dim1){
-			for(let y in dim2){
+		for (let x in dim1) {
+			for (let y in dim2) {
 				result.push(Object.assign({}, dim1[x], dim2[y]));
 			}
 		}

@@ -46,6 +46,8 @@ describe("search", function() {
 				[{
 					'name': new RegExp('.*' + escapeStringRegexp(input) + '.*', 'i')
 				},{
+					'details.code': new RegExp('.*' + escapeStringRegexp(input) + '.*', 'i')
+				},{
 					'details': new RegExp('.*' + escapeStringRegexp(input) + '.*', 'i')
 				}]
 			);
@@ -125,6 +127,7 @@ describe("search", function() {
 				result = search.parse(input, schema, helpers);
 			expect(result).to.be.deep.equal([
 				{'name': inputAsRegEx},
+				{'details.code': inputAsRegEx},
 				{'details.title.ru': inputAsRegEx},
 				{'details.title.en': inputAsRegEx},
 				{'details.title.de': inputAsRegEx},
@@ -156,6 +159,7 @@ describe("search", function() {
 			expect(result).to.be.deep.equal([
 				{'name': inputAsRegEx},
 				{'age': input},
+				{'details.code': inputAsRegEx},
 				{'details.title.ru': inputAsRegEx},
 				{'details.title.en': inputAsRegEx},
 				{'details.title.de': inputAsRegEx},
@@ -191,7 +195,7 @@ describe("search", function() {
 				result = search.parse(input, schema, helpers);
 			expect(result).to.be.deep.equal([
 				{'name': inputAsRegEx},
-				{'active': true},
+				{'active': true},				
 				{'details.articles.ru.active': true},
 				{'details.articles.en.active': true},
 				{'details.articles.de.active': true},

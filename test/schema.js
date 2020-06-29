@@ -25,6 +25,7 @@ module.exports = {
 		searchable: true,
 		properties: {
 			String: [
+				'code',
 				'title.{::lang}',
 				'articles.{::lang}.title',
 				'properties.{::prop}.title',
