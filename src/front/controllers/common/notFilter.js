@@ -1,4 +1,5 @@
-/* global notFramework */
+import { notBase, notRecord } from 'not-framework';
+
 const OPT_DEFAULT_PAGE_SIZE = 20,
 	OPT_DEFAULT_PAGE_NUMBER = 0,
 	OPT_DEFAULT_PAGE_RANGE = 6,
@@ -43,10 +44,10 @@ const OPT_DEFAULT_PAGE_SIZE = 20,
 	}
 */
 
-class notFilter extends notFramework.notBase{
+class notFilter extends notBase{
 	constructor(input){
 		super(input);
-		this.data = new notFramework.notRecord({}, {
+		this.data = new notRecord({}, {
 			pagination: {
 				items: {
 					count: 0,
