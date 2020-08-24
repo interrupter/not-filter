@@ -1,6 +1,6 @@
 {
 	"name": "not-filter",
-	"version": "0.2.8",
+	"version": "0.2.9",
 	"description": "not-* family filter middleware in not- environment",
 	"main": "index.js",
 	"scripts": {
@@ -27,7 +27,7 @@
 	"homepage": "https://github.com/interrupter/not-filter#readme",
 	"dependencies": {
 		"escape-string-regexp": "^4.0.0",
-		"not-config": "0.0.4",
+		"not-config": "*",
 		"not-path": "*"
 	},
 	"devDependencies": {
