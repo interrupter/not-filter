@@ -1,6 +1,6 @@
 {
 	"name": "not-filter",
-	"version": "0.2.9",
+	"version": "0.2.10",
 	"description": "not-* family filter middleware in not- environment",
 	"main": "index.js",
 	"scripts": {
@@ -36,8 +36,8 @@
 		"eslint": "*",
 		"ink-docstrap": "^1.3.2",
 		"istanbul": "*",
-		"jsdoc": "^3.6.4",
+		"jsdoc": "^3.6.6",
 		"mocha": "*",
-		"mongoose": "^5.9.20"
+		"mongoose": "^5.12.2"
 	}
 }

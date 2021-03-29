@@ -1,7 +1,10 @@
 {
 	"parserOptions": {
-		"ecmaVersion": 7,
-		"sourceType": "module"
+		"ecmaVersion": 9,
+		"sourceType": "module",
+		"ecmaFeatures": {
+            "experimentalObjectRestSpread": true
+        }
 	},
 	"env": {
 		"browser": true,

@@ -196,7 +196,7 @@ class CommonQueryProcessor {
 		if (this.getFilterType(filter) === OPT_OR) {
 			filter.push(rule);
 		} else {
-			filter = Object.assign(filter, rule);
+			filter = {...filter, ...rule};
 		}
 		return filter;
 	}
@@ -328,7 +328,7 @@ class CommonQueryProcessor {
 		let result = [];
 		for (let x in dim1) {
 			for (let y in dim2) {
-				result.push(Object.assign({}, dim1[x], dim2[y]));
+				result.push({...dim1[x], ...dim2[y]});
 			}
 		}
 		return result;

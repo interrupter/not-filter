@@ -56,15 +56,15 @@ class Sorter extends CommonQueryProcessor{
 			for(let t in input){
 				let sortBlock = this.parseBlock(t, parseInt(input[t]), modelSchema);
 				if (sortBlock && Object.keys(sortBlock).length >0 ){
-					result = Object.assign(result, sortBlock);
+					result = {...result, ...sortBlock};
 				}
 			}
 		}
 		if(Object.keys(result).length === 0){
 			if (typeof sorterDefaults === 'undefined' || sorterDefaults === null) {
-				result = Object.assign({}, this.OPT_SORTER);
+				result = { ...this.OPT_SORTER};
 			} else {
-				result = Object.assign({}, sorterDefaults);
+				result = {...sorterDefaults};
 			}
 		}
 		return result;
