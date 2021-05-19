@@ -44,7 +44,12 @@ class Filter extends CommonQueryProcessor{
 		let emptyRule = {},
 			t;
 		for (let fieldName in modelSchema) {
-			if (modelSchema[fieldName].searchable && block.hasOwnProperty(fieldName) && typeof block[fieldName] !== 'undefined' && block[fieldName] !== null) {
+			if (
+				modelSchema[fieldName].searchable &&
+				Object.prototype.hasOwnProperty.call(block, fieldName) &&
+				typeof block[fieldName] !== 'undefined' &&
+				block[fieldName] !== null
+			) {
 				let searchString = block[fieldName],
 					searchNumber = parseFloat(searchString);
 				switch (modelSchema[fieldName].type.name) {
