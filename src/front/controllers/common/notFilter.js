@@ -1,4 +1,6 @@
-import { notBase, notRecord } from 'not-bulma';
+import { Frame } from 'not-bulma';
+
+const  {notBase, notRecord} = Frame;
 
 const OPT_DEFAULT_PAGE_SIZE = 20,
 	OPT_DEFAULT_PAGE_NUMBER = 0,
