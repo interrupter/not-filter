@@ -1,8 +1,7 @@
 module.exports = {
 	name: 'not-filter',
 	paths:{
-		controllers:  __dirname + '/front/controllers',
-		templates:    __dirname + '/front/templates'
+		controllers:  __dirname + '/front/controllers'
 	},
 	filter:    require('./back/filter.js'),
 	search:    require('./back/search.js'),
