@@ -1,20 +1,20 @@
-const notNode = require('not-node');
+
 const {
-  notValidationError
+	notValidationError
 } = require('not-error');
 
 module.exports = async ({
-  search
+	search
 }) => {
-  if (typeof seach !== 'string') {
-    throw new notValidationError(
-      'not-filter:query_search_is_not_valid', {
-        keys: ['not-filter:query_search_is_not_valid']
-      },
-      undefined,
-      {
-        filter
-      }
-    );
-  }
+	if (typeof search !== 'string') {
+		throw new notValidationError(
+			'not-filter:query_search_is_not_valid', {
+				keys: ['not-filter:query_search_is_not_valid']
+			},
+			undefined,
+			{
+				search
+			}
+		);
+	}
 };

@@ -1,3 +1,3 @@
 module.exports = {
-  model:{type: Number, required: true}
+	model:{type: Number, required: true}
 };
