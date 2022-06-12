@@ -1,11 +1,14 @@
 module.exports = {
-	name: 'not-filter',
+	name: require('./const.js').MODULE_NAME,
 	paths:{
-		controllers:  __dirname + '/front/controllers'
+		controllers:  __dirname + '/controllers',
+		fields: __dirname + '/fields',
+		forms: __dirname + '/forms',
+		locales: __dirname + '/locales',
 	},
-	filter:    require('./back/filter.js'),
-	search:    require('./back/search.js'),
-	sorter:    require('./back/sort.js'),
-	return:    require('./back/return.js'),
-	pager:     require('./back/pager.js'),
+	filter:    require('./lib/filter.js'),
+	search:    require('./lib/search.js'),
+	sorter:    require('./lib/sort.js'),
+	return:    require('./lib/return.js'),
+	pager:     require('./lib/pager.js'),
 };
