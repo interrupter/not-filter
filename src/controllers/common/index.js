@@ -1,11 +1,7 @@
-import notFilter from './notFilter.js';
+import notFilter from "./notFilter.js";
 
-const manifest = {
+const manifest = {};
 
-};
+const services = {};
 
-const services = {
-	notFilter
-};
-
-export {manifest, services};
+export { manifest, services, notFilter };

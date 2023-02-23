@@ -1,15 +1,17 @@
-import { Frame } from 'not-bulma';
+import { Frame } from "not-bulma";
+import { notPath } from "not-bulma/src/frame";
 
-const  {notBase, notRecord} = Frame;
+const { notBase, notRecord } = Frame;
 
 const OPT_DEFAULT_PAGE_SIZE = 20,
-	OPT_DEFAULT_PAGE_NUMBER = 0,
-	OPT_DEFAULT_PAGE_RANGE = 6,
-	OPT_DEFAULT_SORT_DIRECTION = 1,
-	OPT_DEFAULT_SEARCH = '',
-	OPT_DEFAULT_RETURN = {},
-	OPT_DEFAULT_COMBINED_ACTION = 'listAndCount',
-	OPT_DEFAULT_SORT_FIELD = '_id';
+    OPT_DEFAULT_PAGE_NUMBER = 0,
+    OPT_DEFAULT_PAGE_RANGE = 6,
+    OPT_DEFAULT_SORT_DIRECTION = 1,
+    OPT_DEFAULT_SEARCH = "",
+    OPT_DEFAULT_RETURN = {},
+    OPT_DEFAULT_COMBINED_ACTION = "listAndCount",
+    OPT_DEFAULT_SORT_FIELD = "_id",
+    OPT_DEFAULT_RESULT_PATH = ":";
 
 /**
 	Few concepts
@@ -46,214 +48,285 @@ const OPT_DEFAULT_PAGE_SIZE = 20,
 	}
 */
 
-class notFilter extends notBase{
-	constructor(input){
-		super(input);
-		this.data = new notRecord({}, {
-			pagination: {
-				items: {
-					count: 0,
-					from: 0,
-					to: 0
-				},
-				pages: {
-					count: 0,
-					from: 0,
-					to: 0,
-					current: 0,
-					list: []
-				}
-			}
-		});
-	}
+class notFilter extends notBase {
+    constructor(input) {
+        super(input);
+        this.data = {
+            pagination: {
+                items: {
+                    count: 0,
+                    from: 0,
+                    to: 0,
+                },
+                pages: {
+                    count: 0,
+                    from: 0,
+                    to: 0,
+                    current: 0,
+                    list: [],
+                },
+            },
+        };
+        if (Object.prototype.hasOwnProperty.call(input.options, "filter")) {
+            this.setFilter(input.options.filter, true);
+        } else {
+            this.resetFilter();
+        }
+        if (Object.prototype.hasOwnProperty.call(input.options, "pager")) {
+            this.setPager(input.options.pager, true);
+        } else {
+            this.resetPager();
+        }
+        if (Object.prototype.hasOwnProperty.call(input.options, "sorter")) {
+            this.setSorter(input.options.sorter, true);
+        } else {
+            this.resetSorter(true);
+        }
+        if (Object.prototype.hasOwnProperty.call(input.options, "return")) {
+            this.setReturn(input.options.return);
+        } else {
+            this.setReturn();
+        }
+        if (Object.prototype.hasOwnProperty.call(input.options, "search")) {
+            this.setSearch(input.options.search, true);
+        } else {
+            this.setSearch();
+        }
+    }
 
-	////////////////////////////////////////////////////////////////////////////
-	////navigation
-	////////////////////////////////////////////////////////////////////////////
-	getNext() {
-		let next = isNaN(this.getWorking('pager').page) ? this.getDefaultPageNumber() : this.getWorking('pager').page + 1;
-		this.getWorking('pager').page = Math.min(next, this.data.pagination.pages.to);
-		return this.loadData();
-	}
+    ////////////////////////////////////////////////////////////////////////////
+    ////navigation
+    ////////////////////////////////////////////////////////////////////////////
+    getNext() {
+        let next = isNaN(this.getWorking("pager").page)
+            ? this.getDefaultPageNumber()
+            : this.getWorking("pager").page + 1;
+        this.getWorking("pager").page = Math.min(
+            next,
+            this.data.pagination.pages.to
+        );
+        return this.loadData();
+    }
 
-	getPrev() {
-		let prev = isNaN(this.getWorking('pager').page) ? this.getDefaultPageNumber() : this.getWorking('pager').page - 1;
-		this.getWorking('pager').page = Math.max(prev, this.data.pagination.pages.from);
-		return this.loadData();
-	}
+    getPrev() {
+        let prev = isNaN(this.getWorking("pager").page)
+            ? this.getDefaultPageNumber()
+            : this.getWorking("pager").page - 1;
+        this.getWorking("pager").page = Math.max(
+            prev,
+            this.data.pagination.pages.from
+        );
+        return this.loadData();
+    }
 
-	getFirst() {
-		this.getWorking('pager').page = this.data.pagination.pages.from;
-		return this.loadData();
-	}
+    getFirst() {
+        this.getWorking("pager").page = this.data.pagination.pages.from;
+        return this.loadData();
+    }
 
-	getLast() {
-		this.getWorking('pager').page = this.data.pagination.pages.to;
-		return this.loadData();
-	}
+    getLast() {
+        this.getWorking("pager").page = this.data.pagination.pages.to;
+        return this.loadData();
+    }
 
-	getPage(pageNumber = 0) {
-		this.getWorking('pager').page = pageNumber;
-		return this.loadData();
-	}
+    getPage(pageNumber = 0) {
+        this.getWorking("pager").page = pageNumber;
+        return this.loadData();
+    }
 
-	///////////////////////////////////////////////////////////////////////////
-	////networking
-	///////////////////////////////////////////////////////////////////////////
-	getDataInterface() {
-		return this.getOptions('interface.factory')({});
-	}
+    ///////////////////////////////////////////////////////////////////////////
+    ////networking
+    ///////////////////////////////////////////////////////////////////////////
+    getDataInterface() {
+        return this.getOptions("interface.factory")({});
+    }
 
-	getCombinedActionName() {
-		return (this.getOptions('interface.combinedAction') ? this.getOptions('interface.combinedAction') : OPT_DEFAULT_COMBINED_ACTION);
-	}
+    getCombinedActionName() {
+        return this.getOptions("interface.combinedAction")
+            ? this.getOptions("interface.combinedAction")
+            : OPT_DEFAULT_COMBINED_ACTION;
+    }
 
-	loadData() {
-		//load from server
-		let query = this.getDataInterface()
-				.setFilter(this.getFilter())
-				.setSorter(this.getSorter())
-				.setReturn(this.getReturn())
-				.setSearch(this.getSearch())
-				.setPager(
-					this.getPager().size,
-					this.getPager().page
-				),
-			actionName = this.getCombinedActionName();
-		return query['$'+actionName]()
-			.then(this.updatePagination.bind(this));
-	}
+    loadData() {
+        //load from server
+        let query = this.getDataInterface()
+                .setFilter(this.getFilter())
+                .setSorter(this.getSorter())
+                .setReturn(this.getReturn())
+                .setSearch(this.getSearch())
+                .setPager(this.getPager().size, this.getPager().page),
+            actionName = this.getCombinedActionName();
+        return query["$" + actionName]()
+            .then(this.extractResult.bind(this))
+            .then(this.updatePagination.bind(this));
+    }
 
-	updatePagination(result) {
-		return new Promise((resolve, reject)=>{
-			try{
-				this.data.pagination.pages.list.splice(0, this.data.pagination.pages.list.length);
-				let itemsCount = result.count,
-					itemsFrom = (this.getPager().page - OPT_DEFAULT_PAGE_NUMBER) * this.getPager().size + 1,
-					pagesCount = itemsCount % this.getPager().size ? Math.floor(itemsCount / this.getPager().size) + 1 : Math.round(itemsCount / this.getPager().size),
-					pagesFrom = Math.max(OPT_DEFAULT_PAGE_NUMBER, this.getPager().page - OPT_DEFAULT_PAGE_RANGE),
-					pagesTo = Math.min(pagesCount - (1 - OPT_DEFAULT_PAGE_NUMBER), this.getPager().page + OPT_DEFAULT_PAGE_RANGE),
-					list = [],
-					itemsTo = Math.min(itemsFrom + this.getPager().size - 1, itemsCount);
-				for (let t = pagesFrom; t <= pagesTo; t++) {
-					list.push({
-						index: t,
-						active: t === this.getPager().page
-					});
-				}
-				this.data.pagination.items.count = itemsCount;
-				this.data.pagination.items.from = itemsFrom;
-				this.data.pagination.items.to = itemsTo;
-				this.data.pagination.pages.count = pagesCount;
-				this.data.pagination.pages.from = pagesFrom;
-				this.data.pagination.pages.to = pagesTo;
-				this.data.pagination.pages.current = this.getPager().page;
-				this.data.pagination.pages.list.splice(0, this.data.pagination.pages.list.length, ...list);
-				result.pagination = this.data.pagination;
-				resolve(result);
-			}catch(e){
-				e.response = result;
-				reject(e);
-			}
-		});
+    extractResult(response) {
+        const resultPath = this.getOptions("resultPath", ":");
+        if (resultPath) {
+            return notPath.get(resultPath, response);
+        } else {
+            return response;
+        }
+    }
 
-	}
+    updatePagination(result) {
+        return new Promise((resolve, reject) => {
+            try {
+                this.data.pagination.pages.list.splice(
+                    0,
+                    this.data.pagination.pages.list.length
+                );
+                let itemsCount = result.count,
+                    itemsFrom =
+                        (this.getPager().page - OPT_DEFAULT_PAGE_NUMBER) *
+                            this.getPager().size +
+                        1,
+                    pagesCount =
+                        itemsCount % this.getPager().size
+                            ? Math.floor(itemsCount / this.getPager().size) + 1
+                            : Math.round(itemsCount / this.getPager().size),
+                    pagesFrom = Math.max(
+                        OPT_DEFAULT_PAGE_NUMBER,
+                        this.getPager().page - OPT_DEFAULT_PAGE_RANGE
+                    ),
+                    pagesTo = Math.min(
+                        pagesCount - (1 - OPT_DEFAULT_PAGE_NUMBER),
+                        this.getPager().page + OPT_DEFAULT_PAGE_RANGE
+                    ),
+                    list = [],
+                    itemsTo = Math.min(
+                        itemsFrom + this.getPager().size - 1,
+                        itemsCount
+                    );
+                for (let t = pagesFrom; t <= pagesTo; t++) {
+                    list.push({
+                        index: t,
+                        active: t === this.getPager().page,
+                    });
+                }
+                this.data.pagination.items.count = itemsCount;
+                this.data.pagination.items.from = itemsFrom;
+                this.data.pagination.items.to = itemsTo;
+                this.data.pagination.pages.count = pagesCount;
+                this.data.pagination.pages.from = pagesFrom;
+                this.data.pagination.pages.to = pagesTo;
+                this.data.pagination.pages.current = this.getPager().page;
+                this.data.pagination.pages.list.splice(
+                    0,
+                    this.data.pagination.pages.list.length,
+                    ...list
+                );
+                result.pagination = this.data.pagination;
+                resolve(result);
+            } catch (e) {
+                e.response = result;
+                reject(e);
+            }
+        });
+    }
 
-	///////////////////////////////////////////////////////////////////////////
-	////sorter
-	///////////////////////////////////////////////////////////////////////////
-	setSorter(hash) {
-		this.setWorking('sorter', hash);
-		return this;
-	}
+    ///////////////////////////////////////////////////////////////////////////
+    ////sorter
+    ///////////////////////////////////////////////////////////////////////////
+    setSorter(hash) {
+        this.setWorking("sorter", hash);
+        return this;
+    }
 
-	resetSorter() {
-		let t = {};
-		t[OPT_DEFAULT_SORT_FIELD] = OPT_DEFAULT_SORT_DIRECTION;
-		return this.setSorter(t);
-	}
+    resetSorter() {
+        let t = {};
+        t[OPT_DEFAULT_SORT_FIELD] = OPT_DEFAULT_SORT_DIRECTION;
+        return this.setSorter(t);
+    }
 
-	getSorter() {
-		return this.getWorking('sorter');
-	}
+    getSorter() {
+        return this.getWorking("sorter");
+    }
 
-	getSorterDirection(){
-		try{
-			let names = Object.keys(this.getSorter());
-			return this.getSorter()[names[0]];
-		}catch(e){
-			return OPT_DEFAULT_SORT_DIRECTION;
-		}
-	}
+    getSorterDirection() {
+        try {
+            let names = Object.keys(this.getSorter());
+            return this.getSorter()[names[0]];
+        } catch (e) {
+            return OPT_DEFAULT_SORT_DIRECTION;
+        }
+    }
 
-	///////////////////////////////////////////////////////////////////////////
-	////search
-	///////////////////////////////////////////////////////////////////////////
-	getSearch() {
-		let search =(typeof this.getWorking('search') !== 'undefined' && this.getWorking('search') !== null);
-		return  search?this.getWorking('search'):'';
-	}
+    ///////////////////////////////////////////////////////////////////////////
+    ////search
+    ///////////////////////////////////////////////////////////////////////////
+    getSearch() {
+        let search =
+            typeof this.getWorking("search") !== "undefined" &&
+            this.getWorking("search") !== null;
+        return search ? this.getWorking("search") : "";
+    }
 
-	setSearch(line = OPT_DEFAULT_SEARCH){
-		this.setWorking('search', line);
-		return this;
-	}
+    setSearch(line = OPT_DEFAULT_SEARCH) {
+        this.setWorking("search", line);
+        return this;
+    }
 
-	///////////////////////////////////////////////////////////////////////////
-	////return
-	///////////////////////////////////////////////////////////////////////////
-	getReturn(){
-		return this.getWorking('return');
-	}
+    ///////////////////////////////////////////////////////////////////////////
+    ////return
+    ///////////////////////////////////////////////////////////////////////////
+    getReturn() {
+        return this.getWorking("return");
+    }
 
-	setReturn(ret = OPT_DEFAULT_RETURN){
-		this.setWorking('return', ret);
-		return this;
-	}
+    setReturn(ret = OPT_DEFAULT_RETURN) {
+        this.setWorking("return", ret);
+        return this;
+    }
 
-	///////////////////////////////////////////////////////////////////////////
-	////filter
-	///////////////////////////////////////////////////////////////////////////
-	setFilter(hash) {
-		this.setWorking('filter', hash);
-		return this;
-	}
+    ///////////////////////////////////////////////////////////////////////////
+    ////filter
+    ///////////////////////////////////////////////////////////////////////////
+    setFilter(hash) {
+        this.setWorking("filter", hash);
+        return this;
+    }
 
-	resetFilter() {
-		return this.setFilter({});
-	}
+    resetFilter() {
+        return this.setFilter({});
+    }
 
-	getFilter() {
-		return this.getWorking('filter');
-	}
+    getFilter() {
+        return this.getWorking("filter");
+    }
 
-	///////////////////////////////////////////////////////////////////////////
-	////pager
-	///////////////////////////////////////////////////////////////////////////
-	setPager(hash) {
-		this.setWorking('pager', hash);
-		return this;
-	}
+    ///////////////////////////////////////////////////////////////////////////
+    ////pager
+    ///////////////////////////////////////////////////////////////////////////
+    setPager(hash) {
+        this.setWorking("pager", hash);
+        return this;
+    }
 
-	getDefaultPageNumber() {
-		return isNaN(this.getOptions('pager.page')) ? OPT_DEFAULT_PAGE_NUMBER : this.getOptions('pager.page');
-	}
+    getDefaultPageNumber() {
+        return isNaN(this.getOptions("pager.page"))
+            ? OPT_DEFAULT_PAGE_NUMBER
+            : this.getOptions("pager.page");
+    }
 
-	getDefaultPageSize() {
-		return isNaN(this.getOptions('pager.size')) ? OPT_DEFAULT_PAGE_SIZE : this.getOptions('pager.size');
-	}
+    getDefaultPageSize() {
+        return isNaN(this.getOptions("pager.size"))
+            ? OPT_DEFAULT_PAGE_SIZE
+            : this.getOptions("pager.size");
+    }
 
-	resetPager() {
-		this.setWorking('pager', {
-			size: this.getDefaultPageSize(),
-			page: this.getDefaultPageNumber(),
-		});
-		return this;
-	}
+    resetPager() {
+        this.setWorking("pager", {
+            size: this.getDefaultPageSize(),
+            page: this.getDefaultPageNumber(),
+        });
+        return this;
+    }
 
-	getPager() {
-		return this.getWorking('pager');
-	}
+    getPager() {
+        return this.getWorking("pager");
+    }
 }
 
 export default notFilter;

@@ -93,11 +93,11 @@ class Sorter extends CommonQueryProcessor {
             direction = this.OPT_DIRECTION;
         }
         if (
-            schema.hasOwnProperty(property) &&
+            Object.hasOwn(schema, property) &&
             Object.keys(schema).indexOf(property) > -1
         ) {
             if (
-                schema[property].hasOwnProperty("sortable") &&
+                Object.hasOwn(schema[property], "sortable") &&
                 schema[property].sortable
             ) {
                 result[field] = direction;
