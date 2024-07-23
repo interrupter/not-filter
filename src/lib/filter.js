@@ -52,7 +52,7 @@ class Filter extends CommonQueryProcessor {
             ) {
                 let searchString = block[fieldName],
                     searchNumber = parseFloat(searchString);
-                switch (modelSchema[fieldName].type.name) {
+                switch (modelSchema[fieldName].type.schemaName) {
                     case "Number":
                         if (isNaN(searchNumber)) {
                             continue;
@@ -66,6 +66,7 @@ class Filter extends CommonQueryProcessor {
                             emptyRule[fieldName] = t;
                         }
                         break;
+                    case "ObjectId":
                     case "String":
                         emptyRule[fieldName] = searchString + "";
                         break;
