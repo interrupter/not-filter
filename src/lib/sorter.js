@@ -32,6 +32,14 @@ const OPT_INPUT_GETTER = null;
 const OPT_OUTPUT_SETTER = null;
 
 class Sorter extends CommonQueryProcessor {
+    get DIRECTION_ASC() {
+        return OPT_DIRECTION_ASC;
+    }
+
+    get DIRECTION_DESC() {
+        return OPT_DIRECTION_DESC;
+    }
+
     constructor() {
         super({
             input: OPT_INPUT_PATH,
