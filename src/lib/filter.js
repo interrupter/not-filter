@@ -88,7 +88,7 @@ class Filter extends CommonQueryProcessor {
                                     block[filterFieldName]
                                 );
                             } else {
-                                emptyRule[fieldName] = block[filterFieldName];
+                                emptyRule[filterFieldName] = block[filterFieldName];
                             }
                         }
                     }

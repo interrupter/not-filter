@@ -1,6 +1,6 @@
 {
 	"name": "not-filter",
-	"version": "0.3.5",
+	"version": "0.3.6",
 	"description": "not-* family filter middleware in not- environment",
 	"main": "index.js",
 	"scripts": {
@@ -33,7 +33,7 @@
 	"devDependencies": {
 		"chai": "*",
 		"chai-as-promised": "*",
-		"eslint": "*",
+		"eslint": "^9.7.0",
 		"ink-docstrap": "^1.3.2",
 		"istanbul": "*",
 		"jsdoc": "^3.6.6",
