@@ -1,19 +1,19 @@
 /**
-* @module not-filter/search
-*/
+ * @module not-filter/search
+ */
 
-const CommonQueryProcessor = require('./common.js'),
-	escapeStringRegexp = require('escape-string-regexp'),
-	config = require('not-config').readerForModule('filter');
+const CommonQueryProcessor = require("./common.js"),
+	escapeStringRegexp = require("escape-string-regexp"),
+	config = require("not-config").readerForModule("filter");
 
 /**
  * @const {string} OPT_INPUT_PATH
  */
-const OPT_INPUT_PATH = ':query.search';
+const OPT_INPUT_PATH = ":query.search";
 /**
  * @const {string} OPT_INPUT_PATH
  */
-const OPT_OUTPUT_PATH = ':search';
+const OPT_OUTPUT_PATH = ":search";
 /**
  * @const {string} OPT_INPUT_GETTER
  */
@@ -23,54 +23,64 @@ const OPT_INPUT_GETTER = null;
  */
 const OPT_OUTPUT_SETTER = null;
 
-class Search extends CommonQueryProcessor{
-	constructor(){
+class Search extends CommonQueryProcessor {
+	constructor() {
 		super({
-			input: 	OPT_INPUT_PATH,
+			input: OPT_INPUT_PATH,
 			output: OPT_OUTPUT_PATH,
 			getter: OPT_INPUT_GETTER,
-			setter: OPT_OUTPUT_SETTER
+			setter: OPT_OUTPUT_SETTER,
 		});
 		return this;
 	}
 
 	/**
-	* Parses
-	* @param {object|array} input filter
-	* @param {object} modelSchema not model schema
-	* @param {object} helpers various helpers: libs, consts and etc
-	* @return {object|array} parsed filter
-	*/
-	parse(input, modelSchema, helpers){
+     * Parses
+     * @param {object|array} input filter
+     * @param {object} modelSchema not model schema
+     * @param {object} helpers various helpers: libs, consts and etc
+     * @return {object|array} parsed filter
+     */
+	parse(input, modelSchema, helpers) {
 		let result = this.createFilter(this.OPT_OR);
-		input = input+'';
+		input = input + "";
 		//есть ли фильтрация по полям
-		if (input && input !== null && (input.length > 0)) {
+		if (input && input !== null && input.length > 0) {
 			let filterSearch = input.toString(),
 				filterSearchNumber = parseInt(filterSearch),
-				searchRule = new RegExp('.*' + escapeStringRegexp(filterSearch) + '.*', 'i');
+				searchRule = new RegExp(
+					".*" + escapeStringRegexp(filterSearch) + ".*",
+					"i"
+				);
 			for (let fieldName in modelSchema) {
 				if (modelSchema[fieldName].searchable) {
-					let emptyRule = {}, t;
-					switch (modelSchema[fieldName].type.name) {
-					case 'Number':
+					let emptyRule = {},
+						t;
+					switch (this.determineFieldType(modelSchema[fieldName])) {
+					case "Number":
 						if (isNaN(filterSearchNumber)) {
 							continue;
 						} else {
 							emptyRule[fieldName] = filterSearchNumber;
 						}
 						break;
-					case 'Boolean':
+					case "Boolean":
 						t = this.getBoolean(filterSearch);
-						if (typeof t !== 'undefined') {
+						if (typeof t !== "undefined") {
 							emptyRule[fieldName] = t;
 						}
 						break;
-					case 'String':
+					case "String":
 						emptyRule[fieldName] = searchRule;
 						break;
-					case 'Mixed':
-						this.addRulesForMixed(result, input, fieldName, modelSchema[fieldName], helpers);
+					case "Mixed":
+						this.addRulesForMixed(
+							result,
+							input,
+							fieldName,
+							modelSchema[fieldName],
+							helpers
+						);
 						break;
 					default:
 						continue;
@@ -85,11 +95,11 @@ class Search extends CommonQueryProcessor{
 	}
 
 	/**
-	* Returns default value
-	* @return {object|array}
-	*/
-	getDefault(){
-		return config.get('default:search');
+     * Returns default value
+     * @return {object|array}
+     */
+	getDefault() {
+		return config.get("default:search");
 	}
 }
 
