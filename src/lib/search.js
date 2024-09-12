@@ -34,16 +34,26 @@ class Search extends CommonQueryProcessor {
 		return this;
 	}
 
+	extractSearchableFields(options) {
+		return options &&
+            options.searchableFields &&
+            Array.isArray(options.searchableFields)
+			? options.searchableFields
+			: undefined;
+	}
+
 	/**
      * Parses
      * @param {object|array} input filter
      * @param {object} modelSchema not model schema
-     * @param {object} helpers various helpers: libs, consts and etc
+     * @param {object} [helpers={}] various helpers: libs, consts and etc
+     * @param {object} [options={}] optional params
      * @return {object|array} parsed filter
      */
-	parse(input, modelSchema, helpers) {
+	parse(input, modelSchema, helpers = {}, options = {}) {
 		let result = this.createFilter(this.OPT_OR);
 		input = input + "";
+		const searchableForAction = this.extractSearchableFields(options);
 		//есть ли фильтрация по полям
 		if (input && input !== null && input.length > 0) {
 			let filterSearch = input.toString(),
@@ -54,6 +64,12 @@ class Search extends CommonQueryProcessor {
 				);
 			for (let fieldName in modelSchema) {
 				if (modelSchema[fieldName].searchable) {
+					if (
+						searchableForAction &&
+                        !searchableForAction.includes(fieldName)
+					) {
+						continue;
+					}
 					let emptyRule = {},
 						t;
 					switch (this.determineFieldType(modelSchema[fieldName])) {
