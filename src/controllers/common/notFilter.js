@@ -147,6 +147,7 @@ class notFilter extends notBase {
     }
 
     async loadData() {
+        this.emit("loading");
         //load from server
         let query = this.getDataInterface()
                 .setFilter(this.getFilter())
