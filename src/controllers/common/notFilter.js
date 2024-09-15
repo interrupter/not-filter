@@ -66,27 +66,27 @@ class notFilter extends notBase {
 				},
 			},
 		};
-		if (Object.prototype.hasOwnProperty.call(input.options, "filter")) {
+		if (Object.hasOwn(input.options, "filter")) {
 			this.setFilter(input.options.filter, true);
 		} else {
 			this.resetFilter();
 		}
-		if (Object.prototype.hasOwnProperty.call(input.options, "pager")) {
+		if (Object.hasOwn(input.options, "pager")) {
 			this.setPager(input.options.pager, true);
 		} else {
 			this.resetPager();
 		}
-		if (Object.prototype.hasOwnProperty.call(input.options, "sorter")) {
+		if (Object.hasOwn(input.options, "sorter")) {
 			this.setSorter(input.options.sorter, true);
 		} else {
 			this.resetSorter(true);
 		}
-		if (Object.prototype.hasOwnProperty.call(input.options, "return")) {
+		if (Object.hasOwn(input.options, "return")) {
 			this.setReturn(input.options.return);
 		} else {
 			this.setReturn();
 		}
-		if (Object.prototype.hasOwnProperty.call(input.options, "search")) {
+		if (Object.hasOwn(input.options, "search")) {
 			this.setSearch(input.options.search, true);
 		} else {
 			this.setSearch();
@@ -247,8 +247,8 @@ class notFilter extends notBase {
 		try {
 			let names = Object.keys(this.getSorter());
 			return this.getSorter()[names[0]];
-		} catch (_) {
-			return OPT_DEFAULT_SORT_DIRECTION || _;
+		} catch {
+			return OPT_DEFAULT_SORT_DIRECTION;
 		}
 	}
 
