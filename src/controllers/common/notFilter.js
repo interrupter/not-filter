@@ -67,27 +67,27 @@ class notFilter extends notBase {
             },
         };
         if (Object.hasOwn(input.options, "filter")) {
-            this.setFilter(input.options.filter);
+            this.setFilter(Frame.notCommon.copyObj(input.options.filter));
         } else {
             this.resetFilter();
         }
         if (Object.hasOwn(input.options, "pager")) {
-            this.setPager(input.options.pager);
+            this.setPager(Frame.notCommon.copyObj(input.options.pager));
         } else {
             this.resetPager();
         }
         if (Object.hasOwn(input.options, "sorter")) {
-            this.setSorter(input.options.sorter);
+            this.setSorter(Frame.notCommon.copyObj(input.options.sorter));
         } else {
             this.resetSorter();
         }
         if (Object.hasOwn(input.options, "return")) {
-            this.setReturn(input.options.return);
+            this.setReturn(Frame.notCommon.copyObj(input.options.return));
         } else {
             this.setReturn();
         }
         if (Object.hasOwn(input.options, "search")) {
-            this.setSearch(input.options.search);
+            this.setSearch(Frame.notCommon.copyObj(input.options.search));
         } else {
             this.setSearch();
         }
