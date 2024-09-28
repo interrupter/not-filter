@@ -1,3 +1,5 @@
-module.exports = {
-	model: {type: String, required: true}
+const Mixed = require('mongoose').SchemaTypes.Mixed;
+
+module.exports = {	
+	model: {type: Mixed, required: true}
 };

@@ -53,7 +53,8 @@ class Filter extends CommonQueryProcessor {
 				const fieldType = this.determineFieldType(
 					modelSchema[fieldName]
 				);
-				let searchString = block[fieldName],
+				const searchString = block[fieldName],
+					searchRule =  new RegExp(`.*${block[fieldName]}.*`, 'ugi'),
 					searchNumber = parseFloat(searchString);
 
 				switch (fieldType) {
@@ -71,8 +72,10 @@ class Filter extends CommonQueryProcessor {
 					}
 					break;
 				case "ObjectId":
-				case "String":
 					emptyRule[fieldName] = searchString + "";
+					break;
+				case "String":
+					emptyRule[fieldName] = searchRule;
 					break;
 				default:
 					continue;

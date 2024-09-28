@@ -28,6 +28,8 @@ module.exports = class _FilterQueryForm extends Form {
 	}
 
 	getFormValidationRules() {
-		return [validateSearch, validatePager, validateSorter, validateFilter];
+		return [
+			validateSearch, validatePager, validateSorter, validateFilter
+		];
 	}
 };
