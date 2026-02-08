@@ -147,7 +147,7 @@ class notFilter extends notBase {
     }
 
     async loadData() {
-        this.emit("loading");
+        this.emit("onloading");
         //load from server
         let query = this.getDataInterface()
                 .setFilter(this.getFilter())
@@ -159,7 +159,7 @@ class notFilter extends notBase {
         const result = await query["$" + actionName]()
             .then(this.extractResult.bind(this))
             .then(this.updatePagination.bind(this));
-        this.emit("data", result);
+        this.emit("ondata", result);
         return result;
     }
 

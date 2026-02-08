@@ -24,6 +24,9 @@ module.exports = class _FilterQueryForm extends Form {
 	}
 
 	extract(data) {
+		if (typeof data.sorter === 'undefined'){
+			data.sorter = {};
+		}
 		return data;
 	}
 
