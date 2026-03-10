@@ -285,15 +285,16 @@ class CommonQueryProcessor {
      * Modifies existing rules
      * @param {array|object} 	filter 	filter object
      * @param {object} 			rule 	mixture rule
+     * @param {function} [merger] in case if filter is OR and rule has property as in filter (filter, property, rule)=>{ // modify filter, no return //}
      * @return {array|object} 			filter
      */
-    modifyRules(filter, rule) {
+    modifyRules(filter, rule, merger = undefined) {
         if (this.getFilterType(filter) === OPT_OR) {
             for (let i = 0; i < filter.length; i++) {
-                filter[i] = this.modifyRules(filter[i], rule);
+                filter[i] = this.modifyRules(filter[i], rule, merger);
             }
         } else {
-            filter = this.addRule(filter, rule);
+            filter = this.addRule(filter, rule, merger);
         }
         return filter;
     }
